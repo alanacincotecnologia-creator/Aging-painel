@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report Semanal — Implantação | Prophix</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F8F9FB;--surface:#FFF;--border:#E2E6ED;--txt:#1E293B;--txt2:#64748B;--txt3:#94A3B8;
+  --accent:#2563EB;--success:#16A34A;--warning:#D97706;--danger:#DC2626;
+  --purple:#7C3AED;--orange:#EA580C;--teal:#0D9488;--radius:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--txt);font-size:13px}
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;gap:12px}
+.hdr-icon{width:38px;height:38px;border-radius:9px;background:#EFF6FF;display:flex;align-items:center;justify-content:center;font-size:20px}
+.hdr-title h1{font-size:16px;font-weight:700;color:var(--txt)}
+.hdr-title p{font-size:11px;color:var(--txt2);margin-top:2px}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.pill{display:flex;align-items:center;gap:5px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:500}
+.pill.ok{background:#F0FDF4;color:var(--success);border:1px solid #BBF7D0}
+.pill.err{background:#FEF2F2;color:var(--danger);border:1px solid #FECACA}
+.pill.loading{background:#EFF6FF;color:var(--accent);border:1px solid #BFDBFE}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.btn-ref{padding:7px 16px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);color:var(--txt);font-size:12px;font-weight:500;cursor:pointer}
+.btn-ref:hover{background:var(--bg)}
+
+/* Produto tabs */
+.prod-tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px}
+.ptab{padding:11px 18px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;color:var(--txt2);display:flex;align-items:center;gap:7px}
+.ptab:hover:not(.active){color:var(--txt);background:var(--bg)}
+.ptab.active.p-plano{color:var(--accent);border-bottom-color:var(--accent)}
+.ptab.active.p-fpa{color:var(--teal);border-bottom-color:var(--teal)}
+.ptab.active.p-fluxo{color:var(--orange);border-bottom-color:var(--orange)}
+.bp{padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700}
+.bp-plano{background:#EFF6FF;color:var(--accent)}
+.bp-fpa{background:#F0FDFA;color:var(--teal)}
+.bp-fluxo{background:#FFF7ED;color:var(--orange)}
+
+.main{padding:24px 28px;display:flex;flex-direction:column;gap:20px}
+.psec{display:none}.psec.active{display:flex;flex-direction:column;gap:20px}
+
+/* KPI strip */
+.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px}
+.kpi-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);margin-bottom:6px}
+.kpi-val{font-size:32px;font-weight:700;line-height:1}
+.kpi-sub{font-size:10px;color:var(--txt3);margin-top:3px}
+.c-blue{color:var(--accent)}.c-yel{color:var(--warning)}.c-red{color:var(--danger)}
+.c-grn{color:var(--success)}.c-pur{color:var(--purple)}.c-drk{color:var(--txt)}
+.c-teal{color:var(--teal)}.c-ora{color:var(--orange)}
+
+/* Charts grid */
+.charts-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.charts-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+.chart-card.full{grid-column:1/-1}
+.chart-title{font-size:12px;font-weight:600;color:var(--txt);margin-bottom:4px}
+.chart-sub{font-size:10px;color:var(--txt2);margin-bottom:14px}
+.chart-wrap{position:relative}
+
+/* Tabela escopo limitado */
+.tbl-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{background:var(--bg)}
+th{padding:9px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--txt)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg)}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600}
+.b-grn{background:#F0FDF4;color:var(--success)}
+.b-yel{background:#FFFBEB;color:var(--warning)}
+.b-gray{background:var(--bg);color:var(--txt2);border:1px solid var(--border)}
+.b-blue{background:#EFF6FF;color:var(--accent)}
+.b-teal{background:#F0FDFA;color:var(--teal)}
+
+/* Cards pausados */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.pcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.pcard-name{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:4px}
+.pcard-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+
+/* Seção header */
+.sec-hdr{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.sec-hdr h2{font-size:14px;font-weight:700;color:var(--txt)}
+.sec-hdr .divider{flex:1;height:1px;background:var(--border)}
+
+/* Sumário escopo */
+.esc-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px}
+.ebox{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;text-align:center}
+.ebox-val{font-size:24px;font-weight:700}
+.ebox-lbl{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+
+.footer{text-align:center;padding:14px;font-size:10px;color:var(--txt3);border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-icon">📊</div>
+  <div class="hdr-title">
+    <h1>Report Semanal de Implantação</h1>
+    <p id="hdr-sub">Carregando dados...</p>
+  </div>
+  <div class="hdr-right">
+    <div class="pill loading" id="status-pill"><div class="dot"></div><span id="status-txt">Conectando...</span></div>
+    <button class="btn-ref" onclick="carregar()">↺ Atualizar</button>
+  </div>
+</div>
+
+<div class="prod-tabs">
+  <button class="ptab active p-plano" onclick="showProd('plano',this)"><span class="bp bp-plano">PLANO</span>Plano</button>
+  <button class="ptab p-fpa"          onclick="showProd('fpa',this)"><span class="bp bp-fpa">FP&amp;A</span>FP&amp;A Plus</button>
+  <button class="ptab p-fluxo"        onclick="showProd('fluxo',this)"><span class="bp bp-fluxo">FLUXO</span>Fluxo</button>
+</div>
+
+<div class="main">
+
+  <!-- PLANO -->
+  <div class="psec active" id="sec-plano">
+
+    <div class="sec-hdr"><h2>Status Geral — Plano</h2><div class="divider"></div></div>
+    <div class="kpi-strip" id="kpi-plano"></div>
+    <div class="charts-2">
+      <div class="chart-card">
+        <div class="chart-title">Distribuição por Status</div>
+        <div class="chart-sub">Projetos ativos por status atual</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="ch-plano-status"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Previsão de Entregas</div>
+        <div class="chart-sub">Projetos com encerramento previsto por mês</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="ch-plano-prev"></canvas></div>
+      </div>
+    </div>
+    <div class="charts-2">
+      <div class="chart-card full">
+        <div class="chart-title">Entradas × Saídas</div>
+        <div class="chart-sub">Kick-offs vs encerramentos por mês (col A e col H)</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="ch-plano-io"></canvas></div>
+      </div>
+    </div>
+
+    <div class="sec-hdr"><h2>Projetos com Escopo Limitado</h2><div class="divider"></div></div>
+    <div class="esc-sum" id="esc-sum-plano"></div>
+    <div class="charts-2">
+      <div class="chart-card">
+        <div class="chart-title">Previsão de Conclusão por Mês</div>
+        <div class="chart-sub">Escopo Limitado — col I</div>
+        <div class="chart-wrap" style="height:200px"><canvas id="ch-lim-prev"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Status Fase 1</div>
+        <div class="chart-sub">Entregue vs Pendente</div>
+        <div class="chart-wrap" style="height:200px"><canvas id="ch-lim-f1"></canvas></div>
+      </div>
+    </div>
+    <div class="tbl-wrap" id="tbl-limitado"></div>
+
+    <div class="sec-hdr"><h2>Projetos Pausados — Plano</h2><div class="divider"></div></div>
+    <div class="cards-grid" id="cards-pausados-plano"></div>
+
+  </div>
+
+  <!-- FPA -->
+  <div class="psec" id="sec-fpa">
+    <div class="sec-hdr"><h2>Status Geral — FP&amp;A Plus</h2><div class="divider"></div></div>
+    <div class="kpi-strip" id="kpi-fpa"></div>
+    <div class="charts-2">
+      <div class="chart-card">
+        <div class="chart-title">Distribuição por Status</div>
+        <div class="chart-sub">Projetos FP&A Plus por status</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="ch-fpa-status"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Detalhamento de Projetos</div>
+        <div class="chart-sub">Lista completa FP&A Plus</div>
+        <div id="fpa-lista" style="padding-top:8px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLUXO -->
+  <div class="psec" id="sec-fluxo">
+    <div class="sec-hdr"><h2>Status Geral — Fluxo</h2><div class="divider"></div></div>
+    <div class="kpi-strip" id="kpi-fluxo"></div>
+    <div class="charts-2">
+      <div class="chart-card">
+        <div class="chart-title">Distribuição por Status</div>
+        <div class="chart-sub">Projetos Fluxo por status atual</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="ch-fluxo-status"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Previsão de Entregas</div>
+        <div class="chart-sub">Projetos com encerramento previsto por mês</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="ch-fluxo-prev"></canvas></div>
+      </div>
+    </div>
+    <div class="charts-2">
+      <div class="chart-card full">
+        <div class="chart-title">Entradas × Saídas — Fluxo</div>
+        <div class="chart-sub">Kick-offs vs encerramentos por mês</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="ch-fluxo-io"></canvas></div>
+      </div>
+    </div>
+    <div class="sec-hdr"><h2>Projetos Pausados — Fluxo</h2><div class="divider"></div></div>
+    <div class="cards-grid" id="cards-pausados-fluxo"></div>
+  </div>
+
+</div>
+<div class="footer" id="footer">Report Semanal · Prophix Implantação</div>
+
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbwvaB6ixhU9b71Mul58TWyvVVg_M2u-pRvxZkiOUZTWaguKAhS_mZWLxb3bWLydUmWV/exec";
+const MESES=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+const MESES_CURTOS=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+const CORES_STATUS={"Em andamento":"#2563EB","Pausado":"#D97706","Solic. Cancelamento":"#DC2626","Kick-off":"#16A34A","Alinhamento":"#0D9488","Relacionamento":"#7C3AED","Churn":"#991B1B"};
+const ST_AT=["Em andamento","Alinhamento","Pausado","Solic. Cancelamento","Kick-off","Relacionamento"];
+const charts={};
+
+function isRisco(q){return q==="Sim"||q==="Sim - Médio"}
+function mesStr(s){if(!s)return null;const d=new Date(s);if(isNaN(d))return null;return MESES[d.getMonth()]+"/"+d.getFullYear()}
+function mesLabel(s){if(!s)return null;const d=new Date(s);if(isNaN(d))return null;return MESES_CURTOS[d.getMonth()]+"/"+String(d.getFullYear()).slice(2)}
+function fmtD(s){if(!s)return"—";const d=new Date(s);if(isNaN(d))return s;return MESES[d.getMonth()]+"/"+String(d.getFullYear()).slice(2)}
+
+function setPill(t,txt){document.getElementById("status-pill").className="pill "+t;document.getElementById("status-txt").textContent=txt}
+function showProd(p,el){
+  document.querySelectorAll(".psec").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll(".ptab").forEach(t=>t.classList.remove("active"));
+  document.getElementById("sec-"+p).classList.add("active");
+  el.classList.add("active");
+}
+
+function mkChart(id,type,labels,datasets,opts){
+  if(charts[id]){charts[id].destroy();delete charts[id]}
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  charts[id]=new Chart(ctx,{type,data:{labels,datasets},options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:opts&&opts.legend?opts.legend:false,position:"bottom",labels:{font:{size:11},boxWidth:12}},tooltip:{callbacks:{}}},
+    ...((opts&&opts.extra)||{})
+  }});
+}
+
+function porMes(arr, campoData, mesesRef){
+  const cnt={};
+  arr.forEach(p=>{
+    const m=mesStr(p[campoData]);
+    if(m) cnt[m]=(cnt[m]||0)+1;
+  });
+  return mesesRef.map(m=>cnt[m]||0);
+}
+
+function getMesesRef(arr, campos){
+  const todos=new Set();
+  arr.forEach(p=>campos.forEach(c=>{const m=mesStr(p[c]);if(m)todos.add(m)}));
+  return Array.from(todos).sort((a,b)=>{
+    const [ma,ya]=a.split("/");const [mb,yb]=b.split("/");
+    return (parseInt(ya)*12+MESES.indexOf(ma))-(parseInt(yb)*12+MESES.indexOf(mb));
+  });
+}
+
+async function carregar(){
+  setPill("loading","Atualizando...");
+  try{
+    const res=await fetch(API_URL,{redirect:"follow",mode:"cors"});
+    const json=await res.json();
+    if(!json.ok)throw new Error(json.erro||"Erro");
+    const PLANO=json.plano||[];
+    const FPA=json.fpa||[];
+    const FLUXO=json.fluxo||[];
+
+    renderPlano(PLANO);
+    renderFPA(FPA);
+    renderFluxo(FLUXO);
+
+    const ts=new Date(json.ts);
+    setPill("ok","Atualizado "+ts.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}));
+    document.getElementById("hdr-sub").textContent="Plano · FP&A Plus · Fluxo · "+ts.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
+    document.getElementById("footer").textContent="Report Semanal · Prophix Implantação · "+ts.toLocaleString("pt-BR");
+  }catch(e){setPill("err","Erro: "+e.message)}
+}
+
+// ── PLANO ────────────────────────────────────────────────────
+function renderPlano(D){
+  const ativos=D.filter(p=>ST_AT.includes(p.status));
+  const pausados=D.filter(p=>p.status==="Pausado");
+  const cancels=D.filter(p=>p.status==="Solic. Cancelamento");
+  const kickoffs=D.filter(p=>p.status==="Kick-off");
+  const emRisco=D.filter(p=>["Em andamento","Pausado","Solic. Cancelamento"].includes(p.status)&&isRisco(p.risco));
+  const limitados=D.filter(p=>p.escopo==="Limitado"&&ST_AT.includes(p.status));
+  const concluidos=D.filter(p=>p.status==="Concluído");
+  const churns=D.filter(p=>p.status==="Churn");
+
+  // KPIs
+  document.getElementById("kpi-plano").innerHTML=`
+    <div class="kpi"><div class="kpi-lbl">Total ativos</div><div class="kpi-val c-blue">${ativos.length}</div><div class="kpi-sub">Em andamento + pausados</div></div>
+    <div class="kpi"><div class="kpi-lbl">Em andamento</div><div class="kpi-val c-blue">${D.filter(p=>p.status==="Em andamento").length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Pausados</div><div class="kpi-val c-yel">${pausados.length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Kick-off</div><div class="kpi-val c-drk">${kickoffs.length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Solic. Cancelamento</div><div class="kpi-val c-red">${cancels.length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Em risco</div><div class="kpi-val c-red">${emRisco.length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Escopo Limitado</div><div class="kpi-val c-pur">${limitados.length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Concluídos</div><div class="kpi-val c-grn">${concluidos.length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Churn</div><div class="kpi-val c-red">${churns.length}</div></div>`;
+
+  // Gráfico status (rosca)
+  const statusCounts={};
+  ativos.forEach(p=>{statusCounts[p.status]=(statusCounts[p.status]||0)+1});
+  const sLabels=Object.keys(statusCounts);
+  mkChart("ch-plano-status","doughnut",sLabels,[{data:sLabels.map(s=>statusCounts[s]),backgroundColor:sLabels.map(s=>CORES_STATUS[s]||"#94A3B8"),borderWidth:2,borderColor:"#fff"}],{legend:true});
+
+  // Gráfico previsão entregas por mês
+  const mesesPrev=["Ago/2026","Set/2026","Out/2026","Nov/2026","Dez/2026"];
+  const prevCounts=mesesPrev.map(m=>D.filter(p=>mesStr(p.prevConc)===m&&ST_AT.includes(p.status)).length);
+  mkChart("ch-plano-prev","bar",mesesPrev.map(m=>m.replace("/2026","/26")),[{label:"Previsão",data:prevCounts,backgroundColor:"#2563EB",borderRadius:5}],{extra:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+
+  // Gráfico Entradas x Saídas
+  const mesesIO=getMesesRef(D,["kickoff","entregaF2"]);
+  const entradas=mesesIO.map(m=>D.filter(p=>mesStr(p.kickoff)===m).length);
+  const saidas=mesesIO.map(m=>D.filter(p=>mesStr(p.entregaF2)===m).length);
+  mkChart("ch-plano-io","bar",mesesIO.map(m=>{const[ms,y]=m.split("/");return ms+"/"+String(y).slice(2)}),[
+    {label:"Entradas (Kick-off)",data:entradas,backgroundColor:"#2563EB",borderRadius:4},
+    {label:"Saídas (Encerramento)",data:saidas,backgroundColor:"#16A34A",borderRadius:4}
+  ],{legend:true,extra:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+
+  // Escopo Limitado — sumário
+  const limF1ok=limitados.filter(p=>p.entregaF1);
+  const limF1pend=limitados.filter(p=>!p.entregaF1);
+  const mediaF1=limF1ok.length?Math.round(limF1ok.reduce((s,p)=>{
+    const d1=new Date(p.kickoff),d2=new Date(p.entregaF1);
+    return s+(isNaN(d1)||isNaN(d2)?0:Math.round((d2-d1)/86400000));
+  },0)/limF1ok.length):0;
+  const limF2ok=D.filter(p=>p.escopo==="Limitado"&&p.status==="Concluído"&&p.entregaF2&&p.kickoff);
+  const mediaF2=limF2ok.length?Math.round(limF2ok.reduce((s,p)=>{
+    const d1=new Date(p.kickoff),d2=new Date(p.entregaF2);
+    return s+(isNaN(d1)||isNaN(d2)?0:Math.round((d2-d1)/86400000));
+  },0)/limF2ok.length):0;
+
+  document.getElementById("esc-sum-plano").innerHTML=`
+    <div class="ebox"><div class="ebox-val c-pur">${limitados.length}</div><div class="ebox-lbl">Total ativos</div></div>
+    <div class="ebox"><div class="ebox-val c-grn">${limF1ok.length}</div><div class="ebox-lbl">Fase 1 entregue</div></div>
+    <div class="ebox"><div class="ebox-val c-yel">${limF1pend.length}</div><div class="ebox-lbl">Fase 1 pendente</div></div>
+    <div class="ebox"><div class="ebox-val c-blue">${mediaF1}d</div><div class="ebox-lbl">Média entrega F1</div></div>
+    <div class="ebox"><div class="ebox-val c-blue">${mediaF2}d</div><div class="ebox-lbl">Média entrega F2</div></div>`;
+
+  // Gráfico previsão limitados
+  const mesesLim=["Ago/2026","Set/2026","Out/2026","Nov/2026","Dez/2026"];
+  const limPrev=mesesLim.map(m=>limitados.filter(p=>mesStr(p.prevConc)===m).length);
+  mkChart("ch-lim-prev","bar",mesesLim.map(m=>m.replace("/2026","/26")),[{label:"Projetos",data:limPrev,backgroundColor:"#7C3AED",borderRadius:5}],{extra:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+
+  // Gráfico F1 status
+  mkChart("ch-lim-f1","doughnut",["F1 Entregue","F1 Pendente"],[{data:[limF1ok.length,limF1pend.length],backgroundColor:["#16A34A","#D97706"],borderWidth:2,borderColor:"#fff"}],{legend:true});
+
+  // Tabela limitados
+  const limSort=limitados.sort((a,b)=>(b.aging||0)-(a.aging||0));
+  document.getElementById("tbl-limitado").innerHTML=`<table>
+    <thead><tr>
+      <th style="width:4%">#</th><th style="width:26%">Projeto</th><th style="width:10%">GP</th>
+      <th style="width:12%">Fase 1</th><th style="width:8%">Dias F1</th>
+      <th style="width:14%">Prev. conclusão</th><th style="width:10%">Aging</th><th style="width:16%">Status</th>
+    </tr></thead>
+    <tbody>${limSort.map((p,i)=>{
+      const f1b=p.entregaF1?`<span class="badge b-grn">Entregue</span>`:`<span class="badge b-yel">Pendente</span>`;
+      const agingColor=(p.aging||0)>=300?"c-red":(p.aging||0)>=150?"c-yel":"c-grn";
+      return`<tr><td style="color:#94A3B8">${i+1}</td><td style="font-weight:600;color:var(--accent)">${p.nome}</td>
+      <td>${p.gerente}</td><td>${f1b}</td>
+      <td style="text-align:center">${p.entregaF1?fmtD(p.entregaF1):"—"}</td>
+      <td>${fmtD(p.prevConc)}</td>
+      <td class="${agingColor}" style="font-weight:600">${p.aging||"—"}d</td>
+      <td><span class="badge b-blue">${p.status}</span></td></tr>`;
+    }).join("")}</tbody></table>`;
+
+  // Pausados
+  document.getElementById("cards-pausados-plano").innerHTML=pausados.map(p=>`
+    <div class="pcard">
+      <div class="pcard-name">${p.nome}</div>
+      <div style="font-size:11px;color:var(--txt2);margin-top:3px">${p.motivo||"—"}</div>
+      <div class="pcard-meta">
+        <span class="badge b-gray">${p.escopo||"—"}</span>
+        <span class="badge b-gray">${p.gerente}</span>
+        ${isRisco(p.risco)?`<span class="badge" style="background:#FEF2F2;color:#DC2626">Em risco</span>`:""}
+      </div>
+    </div>`).join("");
+}
+
+// ── FPA ──────────────────────────────────────────────────────
+function renderFPA(D){
+  const ativos=D.filter(p=>ST_AT.includes(p.status));
+  const statusCounts={};
+  ativos.forEach(p=>{statusCounts[p.status]=(statusCounts[p.status]||0)+1});
+
+  document.getElementById("kpi-fpa").innerHTML=`
+    <div class="kpi"><div class="kpi-lbl">Total</div><div class="kpi-val c-teal">${D.length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Em andamento</div><div class="kpi-val c-teal">${D.filter(p=>p.status==="Em andamento").length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Alinhamento</div><div class="kpi-val c-teal">${D.filter(p=>p.status==="Alinhamento").length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Kick-off</div><div class="kpi-val c-drk">${D.filter(p=>p.status==="Kick-off").length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Concluídos</div><div class="kpi-val c-grn">${D.filter(p=>p.status==="Concluído").length}</div></div>`;
+
+  const sLabels=Object.keys(statusCounts);
+  mkChart("ch-fpa-status","doughnut",sLabels,[{data:sLabels.map(s=>statusCounts[s]),backgroundColor:sLabels.map(s=>CORES_STATUS[s]||"#94A3B8"),borderWidth:2,borderColor:"#fff"}],{legend:true});
+
+  document.getElementById("fpa-lista").innerHTML=ativos.map(p=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--txt)">${p.nome}</div>
+        <div style="font-size:11px;color:var(--txt2);margin-top:2px">${p.gerente}</div>
+      </div>
+      <span class="badge b-teal">${p.status}</span>
+    </div>`).join("")||`<div style="color:var(--txt2);font-size:12px;padding:8px 0">Nenhum projeto ativo</div>`;
+}
+
+// ── FLUXO ────────────────────────────────────────────────────
+function renderFluxo(D){
+  const ativos=D.filter(p=>ST_AT.includes(p.status));
+  const pausados=D.filter(p=>p.status==="Pausado");
+  const statusCounts={};
+  ativos.forEach(p=>{statusCounts[p.status]=(statusCounts[p.status]||0)+1});
+
+  document.getElementById("kpi-fluxo").innerHTML=`
+    <div class="kpi"><div class="kpi-lbl">Total ativos</div><div class="kpi-val c-ora">${ativos.length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Em andamento</div><div class="kpi-val c-ora">${D.filter(p=>p.status==="Em andamento").length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Kick-off</div><div class="kpi-val c-drk">${D.filter(p=>p.status==="Kick-off").length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Alinhamento</div><div class="kpi-val c-teal">${D.filter(p=>p.status==="Alinhamento").length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Pausados</div><div class="kpi-val c-yel">${pausados.length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Concluídos</div><div class="kpi-val c-grn">${D.filter(p=>p.status==="Concluído").length}</div></div>`;
+
+  const sLabels=Object.keys(statusCounts);
+  mkChart("ch-fluxo-status","doughnut",sLabels,[{data:sLabels.map(s=>statusCounts[s]),backgroundColor:sLabels.map(s=>CORES_STATUS[s]||"#94A3B8"),borderWidth:2,borderColor:"#fff"}],{legend:true});
+
+  const mesesPrev=["Ago/2026","Set/2026","Out/2026","Nov/2026","Dez/2026"];
+  const prevCounts=mesesPrev.map(m=>D.filter(p=>mesStr(p.prevConc)===m&&ST_AT.includes(p.status)).length);
+  mkChart("ch-fluxo-prev","bar",mesesPrev.map(m=>m.replace("/2026","/26")),[{label:"Previsão",data:prevCounts,backgroundColor:"#EA580C",borderRadius:5}],{extra:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+
+  const mesesIO=getMesesRef(D,["kickoff","entregaF2"]);
+  const entradas=mesesIO.map(m=>D.filter(p=>mesStr(p.kickoff)===m).length);
+  const saidas=mesesIO.map(m=>D.filter(p=>mesStr(p.entregaF2)===m).length);
+  mkChart("ch-fluxo-io","bar",mesesIO.map(m=>{const[ms,y]=m.split("/");return ms+"/"+String(y).slice(2)}),[
+    {label:"Entradas (Kick-off)",data:entradas,backgroundColor:"#EA580C",borderRadius:4},
+    {label:"Saídas (Encerramento)",data:saidas,backgroundColor:"#16A34A",borderRadius:4}
+  ],{legend:true,extra:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+
+  document.getElementById("cards-pausados-fluxo").innerHTML=pausados.length
+    ?pausados.map(p=>`<div class="pcard"><div class="pcard-name">${p.nome}</div><div style="font-size:11px;color:var(--txt2);margin-top:3px">${p.motivo||"—"}</div><div class="pcard-meta"><span class="badge b-gray">${p.gerente}</span></div></div>`).join("")
+    :`<div style="color:var(--txt2);font-size:12px;padding:8px 0">Nenhum projeto pausado</div>`;
+}
+
+// Também precisa passar kickoff e entregaF1 do Apps Script
+// Esses campos já existem na API (kickoff e entregaF2)
+
+carregar();
+setInterval(carregar,5*60*1000);
+</script>
+</body>
+</html>
