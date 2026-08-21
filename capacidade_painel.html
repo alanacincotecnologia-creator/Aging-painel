@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capacidade da Equipe — Implantação | Prophix</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F8F9FB;--surface:#FFF;--border:#E2E6ED;--txt:#1E293B;--txt2:#64748B;--txt3:#94A3B8;
+  --accent:#2563EB;--success:#16A34A;--warning:#D97706;--danger:#DC2626;
+  --purple:#7C3AED;--orange:#EA580C;--teal:#0D9488;--radius:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--txt);font-size:13px}
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;gap:12px}
+.hdr-icon{width:38px;height:38px;border-radius:9px;background:#F0FDF4;display:flex;align-items:center;justify-content:center;font-size:20px}
+.hdr-title h1{font-size:16px;font-weight:700}
+.hdr-title p{font-size:11px;color:var(--txt2);margin-top:2px}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.pill{display:flex;align-items:center;gap:5px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:500}
+.pill.ok{background:#F0FDF4;color:var(--success);border:1px solid #BBF7D0}
+.pill.err{background:#FEF2F2;color:var(--danger);border:1px solid #FECACA}
+.pill.loading{background:#EFF6FF;color:var(--accent);border:1px solid #BFDBFE}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.btn{padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);color:var(--txt);font-size:12px;font-weight:500;cursor:pointer}
+.btn:hover{background:var(--bg)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* Tabs */
+.tabs{display:flex;gap:2px;background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;flex-wrap:wrap}
+.tab{padding:10px 14px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;color:var(--txt2);white-space:nowrap}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab:hover:not(.active){color:var(--txt);background:var(--bg)}
+.tc{display:none}.tc.active{display:block}
+
+.main{padding:24px 28px;display:flex;flex-direction:column;gap:20px}
+
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px}
+.kpi-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);margin-bottom:6px}
+.kpi-val{font-size:32px;font-weight:700;line-height:1}
+.kpi-sub{font-size:10px;color:var(--txt3);margin-top:3px}
+.c-blue{color:var(--accent)}.c-yel{color:var(--warning)}.c-red{color:var(--danger)}
+.c-grn{color:var(--success)}.c-pur{color:var(--purple)}.c-drk{color:var(--txt)}
+
+/* Charts */
+.charts-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+.chart-card.full{grid-column:1/-1}
+.chart-title{font-size:13px;font-weight:600;margin-bottom:3px}
+.chart-sub{font-size:10px;color:var(--txt2);margin-bottom:14px}
+
+/* Tabela */
+.tw{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+thead tr{background:var(--bg)}
+th{padding:9px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+th:hover{color:var(--txt);background:var(--surface)}
+td{padding:9px 12px;border-bottom:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg)}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600;white-space:nowrap}
+.b-grn{background:#F0FDF4;color:var(--success)}
+.b-yel{background:#FFFBEB;color:var(--warning)}
+.b-red{background:#FEF2F2;color:var(--danger)}
+.b-blue{background:#EFF6FF;color:var(--accent)}
+.b-gray{background:var(--bg);color:var(--txt2);border:1px solid var(--border)}
+.b-pur{background:#F5F3FF;color:var(--purple)}
+.b-ora{background:#FFF7ED;color:var(--orange)}
+.b-teal{background:#F0FDFA;color:var(--teal)}
+
+/* Barra de carga */
+.carga-grid{display:flex;flex-direction:column;gap:10px}
+.carga-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.carga-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.carga-nome{font-size:13px;font-weight:600}
+.carga-info{font-size:11px;color:var(--txt2)}
+.carga-bar-bg{height:10px;background:var(--border);border-radius:99px;overflow:hidden}
+.carga-bar-fill{height:100%;border-radius:99px;transition:width .4s}
+.carga-stats{display:flex;gap:16px;margin-top:8px}
+.carga-stat{font-size:11px;color:var(--txt2)}
+.carga-stat strong{color:var(--txt)}
+
+/* Filtros */
+.fbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.fbar span{font-size:11px;color:var(--txt2)}
+.fbtn{padding:4px 11px;border-radius:99px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--txt2)}
+.fbtn.on{border-color:var(--accent);background:#EFF6FF;color:var(--accent)}
+.sel{padding:6px 10px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);color:var(--txt);font-size:12px;cursor:pointer}
+
+/* Seção */
+.sec-hdr{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.sec-hdr h2{font-size:14px;font-weight:700}
+.sec-hdr .div{flex:1;height:1px;background:var(--border)}
+
+.footer{text-align:center;padding:14px;font-size:10px;color:var(--txt3);border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-icon">👥</div>
+  <div class="hdr-title">
+    <h1>Capacidade da Equipe — Implantação</h1>
+    <p id="hdr-sub">Carregando dados...</p>
+  </div>
+  <div class="hdr-right">
+    <div class="pill loading" id="status-pill"><div class="dot"></div><span id="status-txt">Conectando...</span></div>
+    <button class="btn" onclick="carregar()">↺ Atualizar</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('visao',this)">Visão Geral</button>
+  <button class="tab" onclick="showTab('carga',this)">Carga por Consultor</button>
+  <button class="tab" onclick="showTab('tarefas',this)">Todas as Tarefas</button>
+  <button class="tab" onclick="showTab('atrasadas',this)">⚠ Atrasadas</button>
+</div>
+
+<div class="main">
+
+  <!-- VISÃO GERAL -->
+  <div class="tc active" id="tab-visao">
+    <div class="kpi-grid" id="kpis"></div>
+    <div class="charts-2" style="margin-top:16px">
+      <div class="chart-card">
+        <div class="chart-title">Tarefas por Status</div>
+        <div class="chart-sub">Distribuição geral da carteira</div>
+        <div style="position:relative;height:220px"><canvas id="ch-status"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Tarefas por Produto</div>
+        <div class="chart-sub">Plano · FPA · Fluxo</div>
+        <div style="position:relative;height:220px"><canvas id="ch-produto"></canvas></div>
+      </div>
+    </div>
+    <div class="charts-2">
+      <div class="chart-card full">
+        <div class="chart-title">Horas Estimadas por Consultor</div>
+        <div class="chart-sub">Total de horas alocadas na carteira ativa</div>
+        <div style="position:relative;height:260px"><canvas id="ch-horas"></canvas></div>
+      </div>
+    </div>
+    <div class="charts-2">
+      <div class="chart-card full">
+        <div class="chart-title">Prazo das Tarefas por Consultor</div>
+        <div class="chart-sub">No prazo · Vence em breve · Atrasada</div>
+        <div style="position:relative;height:260px"><canvas id="ch-prazo"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARGA POR CONSULTOR -->
+  <div class="tc" id="tab-carga">
+    <div class="fbar">
+      <span>Produto:</span>
+      <button class="fbtn on" onclick="toggleProd(this,'Todos')">Todos</button>
+      <button class="fbtn" onclick="toggleProd(this,'Plano')">Plano</button>
+      <button class="fbtn" onclick="toggleProd(this,'FPA')">FPA</button>
+      <button class="fbtn" onclick="toggleProd(this,'Fluxo')">Fluxo</button>
+    </div>
+    <div class="carga-grid" id="carga-lista"></div>
+  </div>
+
+  <!-- TODAS AS TAREFAS -->
+  <div class="tc" id="tab-tarefas">
+    <div class="fbar">
+      <span>Consultor:</span>
+      <select class="sel" id="sel-consultor" onchange="renderTabela()"><option value="">Todos</option></select>
+      <span style="margin-left:8px">Status:</span>
+      <select class="sel" id="sel-status" onchange="renderTabela()">
+        <option value="">Todos</option>
+        <option>A fazer</option><option>Em andamento</option>
+        <option>Concluída</option><option>Atrasada</option>
+      </select>
+      <span style="margin-left:8px">Produto:</span>
+      <select class="sel" id="sel-produto" onchange="renderTabela()">
+        <option value="">Todos</option>
+        <option>Plano</option><option>FPA</option><option>Fluxo</option>
+      </select>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th style="width:18%" onclick="sortTbl('consultor')">Consultor ↕</th>
+          <th style="width:10%" onclick="sortTbl('produto')">Produto ↕</th>
+          <th style="width:20%" onclick="sortTbl('projeto')">Projeto ↕</th>
+          <th style="width:22%">Tarefa</th>
+          <th style="width:12%" onclick="sortTbl('status')">Status ↕</th>
+          <th style="width:10%" onclick="sortTbl('dataTermino')">Término ↕</th>
+          <th style="width:8%" onclick="sortTbl('horasEst')">H. Est. ↕</th>
+        </tr></thead>
+        <tbody id="tbody-tarefas"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ATRASADAS -->
+  <div class="tc" id="tab-atrasadas">
+    <div id="atrasadas-content"></div>
+  </div>
+
+</div>
+<div class="footer" id="footer">Capacidade da Equipe · Prophix Implantação</div>
+
+<script>
+const API_URL = "COLE_AQUI_A_URL_DO_WEB_APP_CAPACIDADE";
+const HORAS_SEMANA = 40;
+const COR_STATUS = {"A fazer":"#D97706","Em andamento":"#2563EB","Concluída":"#16A34A","Atrasada":"#DC2626","Vence hoje":"#DC2626","Vence em breve":"#EA580C"};
+const COR_PRODUTO = {"Plano":"#2563EB","FPA":"#0D9488","Fluxo":"#EA580C"};
+const charts = {};
+let DADOS = [];
+let sortCol = "consultor", sortDir = 1;
+let filtProd = "Todos";
+
+function setPill(t,txt){document.getElementById("status-pill").className="pill "+t;document.getElementById("status-txt").textContent=txt}
+function showTab(id,el){
+  document.querySelectorAll(".tc").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById("tab-"+id).classList.add("active");
+  el.classList.add("active");
+}
+
+function mkChart(id,type,labels,datasets,opts){
+  if(charts[id]){charts[id].destroy();delete charts[id]}
+  const ctx=document.getElementById(id);if(!ctx)return;
+  charts[id]=new Chart(ctx,{type,data:{labels,datasets},options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:opts?.legend||false,position:"bottom",labels:{font:{size:11},boxWidth:12}}},
+    ...(opts?.extra||{})
+  }});
+}
+
+async function carregar(){
+  setPill("loading","Atualizando...");
+  try{
+    const res=await fetch(API_URL,{redirect:"follow",mode:"cors"});
+    const json=await res.json();
+    if(!json.ok)throw new Error(json.erro||"Erro");
+    DADOS=json.dados.tarefas||[];
+    const ts=new Date(json.ts);
+
+    // Popular select de consultores
+    const sel=document.getElementById("sel-consultor");
+    const consultores=[...new Set(DADOS.map(t=>t.consultor))].sort();
+    sel.innerHTML='<option value="">Todos</option>'+consultores.map(c=>`<option>${c}</option>`).join("");
+
+    renderVisaoGeral();
+    renderCarga();
+    renderTabela();
+    renderAtrasadas();
+
+    setPill("ok","Atualizado "+ts.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}));
+    document.getElementById("hdr-sub").textContent="Backlog de tarefas · "+ts.toLocaleDateString("pt-BR");
+    document.getElementById("footer").textContent="Capacidade da Equipe · Prophix Implantação · "+ts.toLocaleString("pt-BR");
+  }catch(e){setPill("err","Erro: "+e.message)}
+}
+
+function ativas(){return DADOS.filter(t=>t.status!=="Concluída")}
+
+function renderVisaoGeral(){
+  const all=DADOS, atv=ativas();
+  const atrasadas=all.filter(t=>t.prazo==="Atrasada");
+  const hoje=all.filter(t=>t.prazo==="Vence hoje"||t.prazo==="Vence em breve");
+  const totalH=all.reduce((s,t)=>s+t.horasEst,0);
+  const realH=all.reduce((s,t)=>s+t.horasReal,0);
+
+  document.getElementById("kpis").innerHTML=`
+    <div class="kpi"><div class="kpi-lbl">Total tarefas</div><div class="kpi-val c-blue">${all.length}</div><div class="kpi-sub">backlog completo</div></div>
+    <div class="kpi"><div class="kpi-lbl">Ativas</div><div class="kpi-val c-blue">${atv.length}</div><div class="kpi-sub">não concluídas</div></div>
+    <div class="kpi"><div class="kpi-lbl">Atrasadas</div><div class="kpi-val c-red">${atrasadas.length}</div><div class="kpi-sub">prazo vencido</div></div>
+    <div class="kpi"><div class="kpi-lbl">Vence em breve</div><div class="kpi-val c-yel">${hoje.length}</div><div class="kpi-sub">próximos 3 dias</div></div>
+    <div class="kpi"><div class="kpi-lbl">Concluídas</div><div class="kpi-val c-grn">${all.filter(t=>t.status==="Concluída").length}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Horas estimadas</div><div class="kpi-val c-pur">${totalH.toFixed(0)}h</div><div class="kpi-sub">total carteira</div></div>
+    <div class="kpi"><div class="kpi-lbl">Horas realizadas</div><div class="kpi-val c-grn">${realH.toFixed(0)}h</div><div class="kpi-sub">total carteira</div></div>
+    <div class="kpi"><div class="kpi-lbl">Consultores</div><div class="kpi-val c-drk">${[...new Set(DADOS.map(t=>t.consultor))].length}</div><div class="kpi-sub">ativos no backlog</div></div>`;
+
+  // Status
+  const sc={};all.forEach(t=>{sc[t.status]=(sc[t.status]||0)+1});
+  mkChart("ch-status","doughnut",Object.keys(sc),[{data:Object.values(sc),backgroundColor:Object.keys(sc).map(s=>COR_STATUS[s]||"#94A3B8"),borderWidth:2,borderColor:"#fff"}],{legend:true});
+
+  // Produto
+  const pc={};all.forEach(t=>{if(t.produto)pc[t.produto]=(pc[t.produto]||0)+1});
+  mkChart("ch-produto","doughnut",Object.keys(pc),[{data:Object.values(pc),backgroundColor:Object.keys(pc).map(p=>COR_PRODUTO[p]||"#94A3B8"),borderWidth:2,borderColor:"#fff"}],{legend:true});
+
+  // Horas por consultor
+  const cons=[...new Set(DADOS.map(t=>t.consultor))].sort();
+  const hEst=cons.map(c=>DADOS.filter(t=>t.consultor===c).reduce((s,t)=>s+t.horasEst,0));
+  const hReal=cons.map(c=>DADOS.filter(t=>t.consultor===c).reduce((s,t)=>s+t.horasReal,0));
+  mkChart("ch-horas","bar",cons,[
+    {label:"H. Estimadas",data:hEst,backgroundColor:"#2563EB",borderRadius:4},
+    {label:"H. Realizadas",data:hReal,backgroundColor:"#16A34A",borderRadius:4}
+  ],{legend:true,extra:{indexAxis:"y",scales:{x:{beginAtZero:true}}}});
+
+  // Prazo por consultor
+  const prz=cons.map(c=>{
+    const t=ativas().filter(x=>x.consultor===c);
+    return{
+      ok:t.filter(x=>x.prazo!=="Atrasada"&&x.prazo!=="Vence hoje"&&x.prazo!=="Vence em breve").length,
+      breve:t.filter(x=>x.prazo==="Vence em breve"||x.prazo==="Vence hoje").length,
+      atras:t.filter(x=>x.prazo==="Atrasada").length
+    };
+  });
+  mkChart("ch-prazo","bar",cons,[
+    {label:"No prazo",data:prz.map(p=>p.ok),backgroundColor:"#16A34A",borderRadius:4,stack:"s"},
+    {label:"Vence em breve",data:prz.map(p=>p.breve),backgroundColor:"#EA580C",borderRadius:4,stack:"s"},
+    {label:"Atrasada",data:prz.map(p=>p.atras),backgroundColor:"#DC2626",borderRadius:4,stack:"s"}
+  ],{legend:true,extra:{indexAxis:"y",scales:{x:{beginAtZero:true,stacked:true},y:{stacked:true}}}});
+}
+
+function renderCarga(){
+  const cons=[...new Set(DADOS.map(t=>t.consultor))].sort();
+  const filtradas=filtProd==="Todos"?DADOS:DADOS.filter(t=>t.produto===filtProd);
+  document.getElementById("carga-lista").innerHTML=cons.map(c=>{
+    const tarefas=filtradas.filter(t=>t.consultor===c&&t.status!=="Concluída");
+    const hEst=tarefas.reduce((s,t)=>s+t.horasEst,0);
+    const hReal=tarefas.reduce((s,t)=>s+t.horasReal,0);
+    const pct=Math.min(Math.round(hEst/HORAS_SEMANA*100),100);
+    const cor=pct>=100?"#DC2626":pct>=80?"#EA580C":pct>=50?"#D97706":"#16A34A";
+    const atrs=tarefas.filter(t=>t.prazo==="Atrasada").length;
+    return`<div class="carga-row">
+      <div class="carga-top">
+        <span class="carga-nome">${c}</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          ${atrs>0?`<span class="badge b-red">${atrs} atrasada${atrs>1?"s":""}</span>`:""}
+          <span class="carga-info">${hEst.toFixed(1)}h / ${HORAS_SEMANA}h</span>
+          <span style="font-size:13px;font-weight:700;color:${cor}">${pct}%</span>
+        </div>
+      </div>
+      <div class="carga-bar-bg"><div class="carga-bar-fill" style="width:${pct}%;background:${cor}"></div></div>
+      <div class="carga-stats">
+        <span class="carga-stat"><strong>${tarefas.length}</strong> tarefas ativas</span>
+        <span class="carga-stat"><strong>${tarefas.filter(t=>t.status==="Em andamento").length}</strong> em andamento</span>
+        <span class="carga-stat"><strong>${tarefas.filter(t=>t.status==="A fazer").length}</strong> a fazer</span>
+        <span class="carga-stat"><strong>${hReal.toFixed(1)}h</strong> realizadas</span>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function toggleProd(el,p){
+  filtProd=p;
+  document.querySelectorAll("#tab-carga .fbtn").forEach(b=>b.classList.remove("on"));
+  el.classList.add("on");
+  renderCarga();
+}
+
+function sbStatus(s){const m={"A fazer":"b-yel","Em andamento":"b-blue","Concluída":"b-grn","Atrasada":"b-red","Vence hoje":"b-red","Vence em breve":"b-ora"};return`<span class="badge ${m[s]||"b-gray"}">${s}</span>`}
+function sbProd(p){const m={"Plano":"b-blue","FPA":"b-teal","Fluxo":"b-ora"};return`<span class="badge ${m[p]||"b-gray"}">${p||"—"}</span>`}
+
+function renderTabela(){
+  const c=document.getElementById("sel-consultor").value;
+  const s=document.getElementById("sel-status").value;
+  const p=document.getElementById("sel-produto").value;
+  let f=DADOS.filter(t=>(!c||t.consultor===c)&&(!s||t.status===s)&&(!p||t.produto===p));
+  f=f.sort((a,b)=>{
+    const va=a[sortCol]||"",vb=b[sortCol]||"";
+    if(sortCol==="horasEst")return sortDir*((parseFloat(vb)||0)-(parseFloat(va)||0));
+    return sortDir*String(va).localeCompare(String(vb),"pt-BR");
+  });
+  document.getElementById("tbody-tarefas").innerHTML=f.map(t=>`<tr>
+    <td title="${t.consultor}">${t.consultor}</td>
+    <td>${sbProd(t.produto)}</td>
+    <td title="${t.projeto}">${t.projeto||"—"}</td>
+    <td title="${t.tarefa}">${t.tarefa||"—"}</td>
+    <td>${sbStatus(t.prazo||t.status)}</td>
+    <td>${t.dataTermino?new Date(t.dataTermino).toLocaleDateString("pt-BR"):"—"}</td>
+    <td style="text-align:center">${t.horasEst||"—"}h</td>
+  </tr>`).join("");
+}
+
+function sortTbl(col){
+  if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}
+  renderTabela();
+}
+
+function renderAtrasadas(){
+  const atrs=DADOS.filter(t=>t.prazo==="Atrasada"||t.prazo==="Vence hoje"||t.prazo==="Vence em breve")
+    .sort((a,b)=>(a.diasAteTermino||0)-(b.diasAteTermino||0));
+  if(!atrs.length){
+    document.getElementById("atrasadas-content").innerHTML=`<div style="text-align:center;padding:40px;color:var(--txt2)">✅ Nenhuma tarefa atrasada ou com prazo crítico!</div>`;
+    return;
+  }
+  document.getElementById("atrasadas-content").innerHTML=`
+    <div style="font-size:12px;color:var(--txt2);margin-bottom:12px">${atrs.length} tarefa${atrs.length>1?"s":""} com prazo crítico</div>
+    <div class="tw"><table>
+      <thead><tr>
+        <th style="width:18%">Consultor</th><th style="width:10%">Produto</th>
+        <th style="width:20%">Projeto</th><th style="width:22%">Tarefa</th>
+        <th style="width:12%">Prazo</th><th style="width:10%">Término</th><th style="width:8%">Dias</th>
+      </tr></thead>
+      <tbody>${atrs.map(t=>{
+        const dias=t.diasAteTermino;
+        const diasTxt=dias===null?"—":dias<0?`${Math.abs(dias)}d atrás`:dias===0?"Hoje":`${dias}d`;
+        const diasCor=dias===null?"c-drk":dias<0?"c-red":dias===0?"c-red":"c-yel";
+        return`<tr>
+          <td>${t.consultor}</td><td>${sbProd(t.produto)}</td>
+          <td title="${t.projeto}">${t.projeto||"—"}</td>
+          <td title="${t.tarefa}">${t.tarefa||"—"}</td>
+          <td>${sbStatus(t.prazo)}</td>
+          <td>${t.dataTermino?new Date(t.dataTermino).toLocaleDateString("pt-BR"):"—"}</td>
+          <td class="${diasCor}" style="font-weight:700;text-align:center">${diasTxt}</td>
+        </tr>`;
+      }).join("")}</tbody>
+    </table></div>`;
+}
+
+carregar();
+setInterval(carregar,5*60*1000);
+</script>
+</body>
+</html>
