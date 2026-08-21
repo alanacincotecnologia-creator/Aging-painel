@@ -387,11 +387,11 @@ function renderProduto(prod,D){
     <div class="card-desc">${p.motivo||"—"}</div>
     <div class="card-meta">${ab(p.aging)}${sb(p.status)}<span class="badge b-gray">${p.gerente}</span></div></div>`).join("");
 
-  // Escopo limitado (só Plano)
+  // Escopo limitado (Plano e FPA)
   if(!isFluxo){
     const gpL=agrupar(limitados,"gerente");
     const maxL=Math.max(...Object.values(gpL),1);
-    document.getElementById("plano-tab-limitado").innerHTML=`
+    document.getElementById(prod+"-tab-limitado").innerHTML=`
       <div class="sum3">
         <div class="sbox"><div class="sbox-val c-purple">${limitados.length}</div><div class="sbox-lbl">Total</div></div>
         <div class="sbox"><div class="sbox-val c-blue">${limitados.filter(p=>p.status==="Em andamento").length}</div><div class="sbox-lbl">Em andamento</div></div>
