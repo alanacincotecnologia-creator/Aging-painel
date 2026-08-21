@@ -313,7 +313,7 @@ function renderPlano(D){
 
   // Gráfico previsão entregas por mês
   const mesesPrev=["Ago/2026","Set/2026","Out/2026","Nov/2026","Dez/2026"];
-  const prevCounts=mesesPrev.map(m=>D.filter(p=>mesStr(p.prevConc)===m&&ST_AT.includes(p.status)).length);
+  const prevCounts=mesesPrev.map(m=>D.filter(p=>mesStr(p.prevConc)===m&&(p.status==="Em andamento"||p.status==="Concluído")).length);
   mkChart("ch-plano-prev","bar",mesesPrev.map(m=>m.replace("/2026","/26")),[{label:"Previsão",data:prevCounts,backgroundColor:"#2563EB",borderRadius:5}],{extra:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
 
   // Gráfico Entradas x Saídas
@@ -430,7 +430,7 @@ function renderFluxo(D){
   mkChart("ch-fluxo-status","doughnut",sLabels,[{data:sLabels.map(s=>statusCounts[s]),backgroundColor:sLabels.map(s=>CORES_STATUS[s]||"#94A3B8"),borderWidth:2,borderColor:"#fff"}],{legend:true});
 
   const mesesPrev=["Ago/2026","Set/2026","Out/2026","Nov/2026","Dez/2026"];
-  const prevCounts=mesesPrev.map(m=>D.filter(p=>mesStr(p.prevConc)===m&&ST_AT.includes(p.status)).length);
+  const prevCounts=mesesPrev.map(m=>D.filter(p=>mesStr(p.prevConc)===m&&(p.status==="Em andamento"||p.status==="Concluído")).length);
   mkChart("ch-fluxo-prev","bar",mesesPrev.map(m=>m.replace("/2026","/26")),[{label:"Previsão",data:prevCounts,backgroundColor:"#EA580C",borderRadius:5}],{extra:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
 
   const mesesIO=getMesesRef(D,["kickoff","entregaF2"]);
