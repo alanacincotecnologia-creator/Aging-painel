@@ -10,7 +10,7 @@
   --bg:#F8F9FB;--surface:#FFFFFF;--surface2:#F1F3F7;--border:#E2E6ED;
   --txt:#1E293B;--txt2:#64748B;--txt3:#94A3B8;
   --accent:#2563EB;--success:#16A34A;--warning:#D97706;--danger:#DC2626;--purple:#7C3AED;
-  --orange:#EA580C;
+  --orange:#EA580C;--teal:#0D9488;
   --radius:10px;
 }
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--txt);font-size:13px}
@@ -34,6 +34,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .ptab{padding:12px 20px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;color:var(--txt2);display:flex;align-items:center;gap:7px;transition:color .15s}
 .ptab.active.plano{color:var(--accent);border-bottom-color:var(--accent)}
 .ptab.active.fluxo{color:var(--orange);border-bottom-color:var(--orange)}
+.ptab.active.fpa{color:var(--teal);border-bottom-color:var(--teal)}
 .ptab:hover:not(.active){color:var(--txt);background:var(--bg)}
 .badge-prod{padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600}
 .bp-plano{background:#EFF6FF;color:var(--accent)}
@@ -124,6 +125,8 @@ tr:hover td{background:var(--bg)}
 .fbtn{padding:4px 11px;border-radius:99px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--txt2)}
 .fbtn.on{border-color:var(--accent);background:#EFF6FF;color:var(--accent)}
 .fbtn.on.fluxo{border-color:var(--orange);background:#FFF7ED;color:var(--orange)}
+.fbtn.on.fpa{border-color:var(--teal);background:#F0FDFA;color:var(--teal)}
+.b-teal{background:#F0FDFA;color:var(--teal)}
 
 /* Footer */
 .footer{text-align:center;padding:14px;font-size:10px;color:var(--txt3);border-top:1px solid var(--border)}
@@ -148,6 +151,7 @@ tr:hover td{background:var(--bg)}
   <button class="ptab active plano" onclick="showProduto('plano',this)">
     <span class="badge-prod bp-plano">PLANO</span> Plano
   </button>
+  <button class="ptab fpa" onclick="showProduto('fpa',this)"><span class="badge-prod bp-fpa">FP&amp;A</span> FP&amp;A Plus</button>
   <button class="ptab fluxo" onclick="showProduto('fluxo',this)">
     <span class="badge-prod bp-fluxo">FLUXO</span> Fluxo
   </button>
@@ -183,6 +187,31 @@ tr:hover td{background:var(--bg)}
   </div>
 
   <!-- ══════════════════════════ FLUXO ══════════════════════════ -->
+  <div class="produto-section" id="sec-fpa">
+    <div class="kpi-grid" id="kpis-fpa"></div>
+    <div>
+      <div class="tabs" id="tabs-fpa">
+        <button class="tab active fpa-tab" onclick="showTab('fpa','todos',this)">Todos</button>
+        <button class="tab fpa-tab" onclick="showTab('fpa','risco',this)">Em risco</button>
+        <button class="tab fpa-tab" onclick="showTab('fpa','pausado',this)">Pausados</button>
+        <button class="tab fpa-tab" onclick="showTab('fpa','cancel',this)">Solic. Cancelamento</button>
+        <button class="tab fpa-tab" onclick="showTab('fpa','limitado',this)">⬡ Escopo limitado</button>
+        <button class="tab fpa-tab" onclick="showTab('fpa','concluido',this)">Concluídos por mês</button>
+        <button class="tab fpa-tab" onclick="showTab('fpa','churn',this)">Churn</button>
+        <button class="tab fpa-tab" onclick="showTab('fpa','gp',this)">Por gerente</button>
+      </div>
+      <div style="padding:16px 0">
+        <div id="fpa-tab-todos"     class="tab-content active"></div>
+        <div id="fpa-tab-risco"     class="tab-content"></div>
+        <div id="fpa-tab-pausado"   class="tab-content"></div>
+        <div id="fpa-tab-cancel"    class="tab-content"></div>
+        <div id="fpa-tab-limitado"  class="tab-content"></div>
+        <div id="fpa-tab-concluido" class="tab-content"></div>
+        <div id="fpa-tab-churn"     class="tab-content"></div>
+        <div id="fpa-tab-gp"        class="tab-content"></div>
+      </div>
+    </div>
+  </div>
   <div class="produto-section" id="sec-fluxo">
     <div class="kpi-grid" id="kpis-fluxo"></div>
     <div>
@@ -223,8 +252,9 @@ function fmtD(s){if(!s)return"—";const d=new Date(s);if(isNaN(d))return s;retu
 function mesConc(s){if(!s)return null;const d=new Date(s);if(isNaN(d))return null;return MESES[d.getMonth()]+"/"+d.getFullYear()}
 
 let filtrosPlano=new Set(ST_AT);
+let filtrosFPA=new Set(ST_AT);
 let filtrosFluxo=new Set(ST_AT);
-let PLANO=[], FLUXO=[];
+let PLANO=[], FPA=[], FLUXO=[];
 
 async function carregar(){
   setPill("loading","Atualizando...");
@@ -234,16 +264,19 @@ async function carregar(){
     if(!json.ok)throw new Error(json.erro||"Erro na API");
 
     PLANO=json.plano||[];
+    FPA=json.fpa||[];
     FLUXO=json.fluxo||[];
     PLANO.forEach(p=>{p.r=isRisco(p.risco);p.prevFmt=fmtD(p.prevConc);p.mc=mesConc(p.entregaF2)});
+    FPA.forEach(p=>{p.r=isRisco(p.risco);p.prevFmt=fmtD(p.prevConc);p.mc=mesConc(p.entregaF2)});
     FLUXO.forEach(p=>{p.r=isRisco(p.risco);p.prevFmt=fmtD(p.prevConc);p.mc=mesConc(p.entregaF2)});
 
     renderProduto("plano",PLANO);
+    renderProduto("fpa",FPA,"fpa");
     renderProduto("fluxo",FLUXO);
 
     const ts=new Date(json.ts);
     setPill("ok","Atualizado "+ts.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}));
-    document.getElementById("hdr-sub").textContent="Plano + Fluxo · Google Sheets · "+ts.toLocaleDateString("pt-BR");
+    document.getElementById("hdr-sub").textContent="Plano · FP&A Plus · Fluxo · Google Sheets · "+ts.toLocaleDateString("pt-BR");
     document.getElementById("footer").textContent="Aging - Report Diretoria · Prophix · "+ts.toLocaleString("pt-BR");
   }catch(e){setPill("err","Erro: "+e.message)}
 }
@@ -278,9 +311,10 @@ function agrupar(arr,c){return arr.reduce((a,p)=>{a[p[c]]=(a[p[c]]||0)+1;return 
 // ── Render por produto ───────────────────────────────────────
 function renderProduto(prod,D){
   const isFluxo=prod==="fluxo";
-  const cor=isFluxo?"var(--orange)":"var(--accent)";
-  const corClass=isFluxo?"b-orange":"b-blue";
-  const fbtnClass=isFluxo?"fluxo":"";
+  const isFPA=prod==="fpa";
+  const cor=isFluxo?"var(--orange)":isFPA?"var(--teal)":"var(--accent)";
+  const corClass=isFluxo?"b-orange":isFPA?"b-teal":"b-blue";
+  const fbtnClass=isFluxo?"fluxo":isFPA?"fpa":"";
 
   const ativos   =D.filter(p=>ST_AT.includes(p.status));
   const pausados =D.filter(p=>p.status==="Pausado");
@@ -303,7 +337,7 @@ function renderProduto(prod,D){
     <div class="kpi"><div class="kpi-label">Concluídos</div><div class="kpi-value c-green">${D.filter(p=>p.status==="Concluído").length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"} = Concluído</div></div>`;
 
   // Todos
-  const filtros=isFluxo?filtrosFluxo:filtrosPlano;
+  const filtros=isFluxo?filtrosFluxo:isFPA?filtrosFPA:filtrosPlano;
   document.getElementById(prod+"-tab-todos").innerHTML=`
     <div class="filter-bar"><span>Filtrar:</span>
       ${ST_AT.map(s=>`<button class="fbtn ${filtros.has(s)?"on":""} ${fbtnClass}" onclick="toggleF('${prod}',this,'${s}')">${s}</button>`).join("")}
@@ -437,9 +471,20 @@ function renderListCards(prod,tipo,lista,badgeClass,barColor){
     <div class="card-meta">${ab(p.aging)}${p.r?qb(p.risco):""}${sb(p.status)}<span class="badge b-gray">${p.gerente}</span></div></div>`).join("")}`;
 }
 
+function getFiltros(prod){
+  if(prod==="fluxo") return filtrosFluxo;
+  if(prod==="fpa")   return filtrosFPA;
+  return filtrosPlano;
+}
+function getData(prod){
+  if(prod==="fluxo") return FLUXO;
+  if(prod==="fpa")   return FPA;
+  return PLANO;
+}
+
 function filtrarTodos(prod,D){
-  if(!D)D=prod==="fluxo"?FLUXO:PLANO;
-  const filtros=prod==="fluxo"?filtrosFluxo:filtrosPlano;
+  if(!D) D=getData(prod);
+  const filtros=getFiltros(prod);
   const isFluxo=prod==="fluxo";
   const f=D.filter(p=>ST_AT.includes(p.status)&&filtros.has(p.status)).sort((a,b)=>(b.aging||0)-(a.aging||0));
   const tb=document.getElementById(prod+"-tbody-todos");
@@ -451,7 +496,7 @@ function filtrarTodos(prod,D){
 }
 
 function toggleF(prod,el,v){
-  const filtros=prod==="fluxo"?filtrosFluxo:filtrosPlano;
+  const filtros=getFiltros(prod);
   filtros.has(v)?filtros.delete(v):filtros.add(v);
   el.classList.toggle("on");
   filtrarTodos(prod);
