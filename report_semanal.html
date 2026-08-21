@@ -347,7 +347,7 @@ function renderPlano(D){
 
   // Gráfico previsão limitados
   const mesesLim=["Ago/2026","Set/2026","Out/2026","Nov/2026","Dez/2026"];
-  const limPrev=mesesLim.map(m=>limitados.filter(p=>mesStr(p.prevConc)===m).length);
+  const limPrev=mesesLim.map(m=>limitados.filter(p=>mesStr(p.prevConc)===m&&p.status==="Em andamento").length);
   mkChart("ch-lim-prev","bar",mesesLim.map(m=>m.replace("/2026","/26")),[{label:"Projetos",data:limPrev,backgroundColor:"#7C3AED",borderRadius:5}],{extra:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
 
   // Gráfico F1 status
