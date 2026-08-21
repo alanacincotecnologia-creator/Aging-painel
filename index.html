@@ -5,632 +5,467 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aging — Report Diretoria | Prophix</title>
 <style>
-  /* ── Reset & base ─────────────────────────────────────── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg:        #F8F9FB;
-    --surface:   #FFFFFF;
-    --surface2:  #F1F3F7;
-    --border:    #E2E6ED;
-    --txt:       #1E293B;
-    --txt2:      #64748B;
-    --txt3:      #94A3B8;
-    --accent:    #2563EB;
-    --success:   #16A34A;
-    --warning:   #D97706;
-    --danger:    #DC2626;
-    --purple:    #7C3AED;
-    --radius:    10px;
-    --shadow:    0 1px 4px rgba(0,0,0,.08);
-  }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-         background: var(--bg); color: var(--txt); font-size: 13px; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F8F9FB;--surface:#FFFFFF;--surface2:#F1F3F7;--border:#E2E6ED;
+  --txt:#1E293B;--txt2:#64748B;--txt3:#94A3B8;
+  --accent:#2563EB;--success:#16A34A;--warning:#D97706;--danger:#DC2626;--purple:#7C3AED;
+  --orange:#EA580C;
+  --radius:10px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--txt);font-size:13px}
 
-  /* ── Header ───────────────────────────────────────────── */
-  .hdr { background: var(--surface); border-bottom: 1px solid var(--border);
-         padding: 14px 24px; display: flex; align-items: center; gap: 12px; }
-  .hdr-logo { width: 36px; height: 36px; border-radius: 8px;
-              background: #EFF6FF; display: flex; align-items: center; justify-content: center; }
-  .hdr-logo svg { width: 20px; height: 20px; color: var(--accent); }
-  .hdr-title h1 { font-size: 15px; font-weight: 600; color: var(--txt); }
-  .hdr-title p  { font-size: 11px; color: var(--txt2); margin-top: 1px; }
-  .hdr-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-  .status-pill { display: flex; align-items: center; gap: 5px; padding: 4px 12px;
-                 border-radius: 99px; font-size: 11px; font-weight: 500; }
-  .status-pill.ok  { background: #F0FDF4; color: var(--success); border: 1px solid #BBF7D0; }
-  .status-pill.err { background: #FEF2F2; color: var(--danger);  border: 1px solid #FECACA; }
-  .status-pill.loading { background: #EFF6FF; color: var(--accent); border: 1px solid #BFDBFE; }
-  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-  .btn-refresh { display: flex; align-items: center; gap: 6px; padding: 7px 14px;
-                 border-radius: var(--radius); border: 1px solid var(--border);
-                 background: var(--surface); color: var(--txt); font-size: 12px;
-                 font-weight: 500; cursor: pointer; transition: background .15s; }
-  .btn-refresh:hover { background: var(--bg); }
+/* Header */
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:12px}
+.hdr-icon{width:36px;height:36px;border-radius:8px;background:#EFF6FF;display:flex;align-items:center;justify-content:center;font-size:18px}
+.hdr-title h1{font-size:15px;font-weight:600}
+.hdr-title p{font-size:11px;color:var(--txt2);margin-top:1px}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.pill{display:flex;align-items:center;gap:5px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:500}
+.pill.ok{background:#F0FDF4;color:var(--success);border:1px solid #BBF7D0}
+.pill.err{background:#FEF2F2;color:var(--danger);border:1px solid #FECACA}
+.pill.loading{background:#EFF6FF;color:var(--accent);border:1px solid #BFDBFE}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.btn-refresh{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);color:var(--txt);font-size:12px;font-weight:500;cursor:pointer}
+.btn-refresh:hover{background:var(--bg)}
 
-  /* ── Main layout ──────────────────────────────────────── */
-  .main { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+/* Produto tabs (Plano / Fluxo) */
+.produto-tabs{display:flex;gap:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px}
+.ptab{padding:12px 20px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;color:var(--txt2);display:flex;align-items:center;gap:7px;transition:color .15s}
+.ptab.active.plano{color:var(--accent);border-bottom-color:var(--accent)}
+.ptab.active.fluxo{color:var(--orange);border-bottom-color:var(--orange)}
+.ptab:hover:not(.active){color:var(--txt);background:var(--bg)}
+.badge-prod{padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600}
+.bp-plano{background:#EFF6FF;color:var(--accent)}
+.bp-fluxo{background:#FFF7ED;color:var(--orange)}
 
-  /* ── KPIs ─────────────────────────────────────────────── */
-  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
-  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-         padding: 14px 16px; }
-  .kpi-label { font-size: 10px; text-transform: uppercase; letter-spacing: .6px;
-               color: var(--txt2); margin-bottom: 6px; }
-  .kpi-value { font-size: 26px; font-weight: 600; line-height: 1; }
-  .kpi-sub   { font-size: 10px; color: var(--txt3); margin-top: 3px; }
-  .c-blue   { color: var(--accent);  }
-  .c-yellow { color: var(--warning); }
-  .c-red    { color: var(--danger);  }
-  .c-green  { color: var(--success); }
-  .c-purple { color: var(--purple);  }
-  .c-dark   { color: var(--txt);     }
+/* Main */
+.main{padding:20px 24px;display:flex;flex-direction:column;gap:16px}
+.produto-section{display:none}
+.produto-section.active{display:flex;flex-direction:column;gap:16px}
 
-  /* ── Tabs ─────────────────────────────────────────────── */
-  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border);
-          background: var(--surface); padding: 0 24px; flex-wrap: wrap; }
-  .tab  { padding: 10px 14px; font-size: 12px; font-weight: 500; cursor: pointer;
-          border: none; background: none; border-bottom: 2px solid transparent;
-          color: var(--txt2); white-space: nowrap; transition: color .15s; }
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .tab:hover:not(.active) { color: var(--txt); background: var(--bg); }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);margin-bottom:6px}
+.kpi-value{font-size:26px;font-weight:600;line-height:1}
+.kpi-sub{font-size:10px;color:var(--txt3);margin-top:3px}
+.c-blue{color:var(--accent)}.c-yellow{color:var(--warning)}.c-red{color:var(--danger)}
+.c-green{color:var(--success)}.c-purple{color:var(--purple)}.c-dark{color:var(--txt)}.c-orange{color:var(--orange)}
 
-  /* ── Table ────────────────────────────────────────────── */
-  .table-wrap { background: var(--surface); border: 1px solid var(--border);
-                border-radius: var(--radius); overflow: hidden; }
-  table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
-  thead tr { background: var(--bg); }
-  th { padding: 9px 12px; text-align: left; font-size: 10px; font-weight: 600;
-       color: var(--txt2); text-transform: uppercase; letter-spacing: .5px;
-       border-bottom: 1px solid var(--border); }
-  td { padding: 9px 12px; color: var(--txt); border-bottom: 1px solid var(--border);
-       overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--bg); }
+/* Sub-tabs */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);background:var(--surface);padding:0 0;flex-wrap:wrap}
+.tab{padding:9px 13px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;color:var(--txt2);white-space:nowrap}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab.active.fluxo-tab{color:var(--orange);border-bottom-color:var(--orange)}
+.tab:hover:not(.active){color:var(--txt);background:var(--bg)}
+.tab-content{display:none}
+.tab-content.active{display:block}
 
-  /* ── Badges ───────────────────────────────────────────── */
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 99px;
-           font-size: 10px; font-weight: 600; white-space: nowrap; }
-  .b-blue   { background: #EFF6FF; color: var(--accent);  }
-  .b-yellow { background: #FFFBEB; color: var(--warning); }
-  .b-red    { background: #FEF2F2; color: var(--danger);  }
-  .b-green  { background: #F0FDF4; color: var(--success); }
-  .b-purple { background: #F5F3FF; color: var(--purple);  }
-  .b-gray   { background: var(--bg); color: var(--txt2); border: 1px solid var(--border); }
+/* Table */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+thead tr{background:var(--bg)}
+th{padding:9px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+td{padding:9px 12px;color:var(--txt);border-bottom:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg)}
 
-  /* ── Cards ────────────────────────────────────────────── */
-  .card { background: var(--surface); border: 1px solid var(--border);
-          border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; }
-  .card-title { font-size: 13px; font-weight: 600; color: var(--txt);
-                display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
-  .card-desc  { font-size: 11px; color: var(--txt2); line-height: 1.5; }
-  .card-meta  { display: flex; align-items: center; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+/* Badges */
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600;white-space:nowrap}
+.b-blue{background:#EFF6FF;color:var(--accent)}
+.b-yellow{background:#FFFBEB;color:var(--warning)}
+.b-red{background:#FEF2F2;color:var(--danger)}
+.b-green{background:#F0FDF4;color:var(--success)}
+.b-purple{background:#F5F3FF;color:var(--purple)}
+.b-gray{background:var(--bg);color:var(--txt2);border:1px solid var(--border)}
+.b-orange{background:#FFF7ED;color:var(--orange)}
 
-  /* ── Bars ─────────────────────────────────────────────── */
-  .bar-section { background: var(--surface); border: 1px solid var(--border);
-                 border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
-  .bar-title { font-size: 10px; font-weight: 600; text-transform: uppercase;
-               letter-spacing: .5px; color: var(--txt2); margin-bottom: 12px; }
-  .bar-row  { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
-  .bar-row:last-child { margin-bottom: 0; }
-  .bar-lbl  { font-size: 11px; color: var(--txt2); width: 80px; flex-shrink: 0;
-              overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .bar-track { flex: 1; height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
-  .bar-fill  { height: 100%; border-radius: 99px; transition: width .4s ease; }
-  .bar-num   { font-size: 12px; font-weight: 600; color: var(--txt); width: 24px; text-align: right; }
-  .bar-badges { display: flex; gap: 5px; }
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px}
+.card-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}
+.card-desc{font-size:11px;color:var(--txt2);line-height:1.5}
+.card-meta{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}
 
-  /* ── Accordion ────────────────────────────────────────── */
-  .acc-header { display: flex; align-items: center; justify-content: space-between;
-                padding: 10px 14px; background: var(--bg); border-radius: var(--radius);
-                cursor: pointer; border: 1px solid var(--border); margin-bottom: 6px; }
-  .acc-header:hover { background: var(--surface2); }
-  .acc-left  { display: flex; align-items: center; gap: 10px; }
-  .acc-title { font-size: 13px; font-weight: 600; color: var(--txt); }
-  .acc-count { font-size: 11px; color: var(--txt2); }
-  .acc-chev  { font-size: 16px; color: var(--txt3); transition: transform .2s; }
-  .acc-chev.open { transform: rotate(180deg); }
-  .acc-body  { display: none; margin-bottom: 10px; }
-  .acc-body.open { display: block; }
-  .acc-row   { display: flex; align-items: center; justify-content: space-between;
-               padding: 8px 12px; border-bottom: 1px solid var(--border);
-               font-size: 12px; background: var(--surface); }
-  .acc-row:first-child { border-radius: var(--radius) var(--radius) 0 0; }
-  .acc-row:last-child  { border-bottom: none; border-radius: 0 0 var(--radius) var(--radius); }
+/* Bars */
+.bar-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.bar-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--txt2);margin-bottom:12px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.bar-row:last-child{margin-bottom:0}
+.bar-lbl{font-size:11px;color:var(--txt2);width:80px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;height:8px;background:var(--border);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px}
+.bar-num{font-size:12px;font-weight:600;color:var(--txt);width:24px;text-align:right}
+.bar-badges{display:flex;gap:5px}
 
-  /* ── Summary boxes ────────────────────────────────────── */
-  .sum3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
-  .sbox { background: var(--bg); border: 1px solid var(--border);
-          border-radius: var(--radius); padding: 12px; text-align: center; }
-  .sbox-val { font-size: 22px; font-weight: 600; }
-  .sbox-lbl { font-size: 10px; color: var(--txt2); text-transform: uppercase;
-              letter-spacing: .5px; margin-top: 3px; }
+/* Accordion */
+.acc-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);border-radius:var(--radius);cursor:pointer;border:1px solid var(--border);margin-bottom:6px}
+.acc-hdr:hover{background:var(--surface2)}
+.acc-left{display:flex;align-items:center;gap:10px}
+.acc-title{font-size:13px;font-weight:600}
+.acc-count{font-size:11px;color:var(--txt2)}
+.acc-chev{font-size:16px;color:var(--txt3);transition:transform .2s}
+.acc-chev.open{transform:rotate(180deg)}
+.acc-body{display:none;margin-bottom:10px}
+.acc-body.open{display:block}
+.acc-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px;background:var(--surface)}
+.acc-row:first-child{border-radius:var(--radius) var(--radius) 0 0}
+.acc-row:last-child{border-bottom:none;border-radius:0 0 var(--radius) var(--radius)}
 
-  /* ── Filtros ──────────────────────────────────────────── */
-  .filter-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-  .filter-bar span { font-size: 11px; color: var(--txt2); }
-  .fbtn { padding: 4px 11px; border-radius: 99px; font-size: 11px; font-weight: 500;
-          cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--txt2); }
-  .fbtn.on { border-color: var(--accent); background: #EFF6FF; color: var(--accent); }
+/* Sum boxes */
+.sum3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.sbox{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center}
+.sbox-val{font-size:22px;font-weight:600}
+.sbox-lbl{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
 
-  /* ── Loader ───────────────────────────────────────────── */
-  .loader { display: flex; align-items: center; justify-content: center;
-            height: 120px; gap: 10px; color: var(--txt2); font-size: 13px; }
-  .spinner { width: 18px; height: 18px; border: 2px solid var(--border);
-             border-top-color: var(--accent); border-radius: 50%;
-             animation: spin .6s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* Filter */
+.filter-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filter-bar span{font-size:11px;color:var(--txt2)}
+.fbtn{padding:4px 11px;border-radius:99px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--txt2)}
+.fbtn.on{border-color:var(--accent);background:#EFF6FF;color:var(--accent)}
+.fbtn.on.fluxo{border-color:var(--orange);background:#FFF7ED;color:var(--orange)}
 
-  /* ── Footer ───────────────────────────────────────────── */
-  .footer { text-align: center; padding: 14px; font-size: 10px; color: var(--txt3);
-            border-top: 1px solid var(--border); margin-top: 8px; }
+/* Footer */
+.footer{text-align:center;padding:14px;font-size:10px;color:var(--txt3);border-top:1px solid var(--border)}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="hdr">
-  <div class="hdr-logo">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
-      <line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
-    </svg>
-  </div>
+  <div class="hdr-icon">📊</div>
   <div class="hdr-title">
     <h1>Aging — Report Diretoria</h1>
     <p id="hdr-sub">Carregando dados...</p>
   </div>
   <div class="hdr-right">
-    <div class="status-pill loading" id="status-pill">
-      <div class="dot"></div>
-      <span id="status-txt">Conectando...</span>
-    </div>
-    <button class="btn-refresh" onclick="carregar()">
-      ↺ Atualizar
-    </button>
+    <div class="pill loading" id="status-pill"><div class="dot"></div><span id="status-txt">Conectando...</span></div>
+    <button class="btn-refresh" onclick="carregar()">↺ Atualizar</button>
   </div>
 </div>
 
-<!-- KPIs -->
+<!-- PRODUTO TABS -->
+<div class="produto-tabs">
+  <button class="ptab active plano" onclick="showProduto('plano',this)">
+    <span class="badge-prod bp-plano">PLANO</span> Plano
+  </button>
+  <button class="ptab fluxo" onclick="showProduto('fluxo',this)">
+    <span class="badge-prod bp-fluxo">FLUXO</span> Fluxo
+  </button>
+</div>
+
 <div class="main">
-  <div class="kpi-grid" id="kpis">
-    <div class="loader"><div class="spinner"></div> Carregando...</div>
+
+  <!-- ══════════════════════════ PLANO ══════════════════════════ -->
+  <div class="produto-section active" id="sec-plano">
+    <div class="kpi-grid" id="kpis-plano"></div>
+    <div>
+      <div class="tabs" id="tabs-plano">
+        <button class="tab active" onclick="showTab('plano','todos',this)">Todos</button>
+        <button class="tab" onclick="showTab('plano','risco',this)">Em risco</button>
+        <button class="tab" onclick="showTab('plano','pausado',this)">Pausados</button>
+        <button class="tab" onclick="showTab('plano','cancel',this)">Solic. Cancelamento</button>
+        <button class="tab" onclick="showTab('plano','limitado',this)">⬡ Escopo limitado</button>
+        <button class="tab" onclick="showTab('plano','concluido',this)">Concluídos por mês</button>
+        <button class="tab" onclick="showTab('plano','churn',this)">Churn</button>
+        <button class="tab" onclick="showTab('plano','gp',this)">Por gerente</button>
+      </div>
+      <div style="padding:16px 0">
+        <div id="plano-tab-todos"    class="tab-content active"></div>
+        <div id="plano-tab-risco"    class="tab-content"></div>
+        <div id="plano-tab-pausado"  class="tab-content"></div>
+        <div id="plano-tab-cancel"   class="tab-content"></div>
+        <div id="plano-tab-limitado" class="tab-content"></div>
+        <div id="plano-tab-concluido"class="tab-content"></div>
+        <div id="plano-tab-churn"    class="tab-content"></div>
+        <div id="plano-tab-gp"       class="tab-content"></div>
+      </div>
+    </div>
   </div>
 
-  <!-- TABS -->
-  <div>
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('todos',this)">Todos</button>
-      <button class="tab" onclick="showTab('risco',this)">Em risco</button>
-      <button class="tab" onclick="showTab('pausado',this)">Pausados</button>
-      <button class="tab" onclick="showTab('cancel',this)">Solic. Cancelamento</button>
-      <button class="tab" onclick="showTab('limitado',this)">⬡ Escopo limitado</button>
-      <button class="tab" onclick="showTab('concluido',this)">Concluídos por mês</button>
-      <button class="tab" onclick="showTab('churn',this)">Churn</button>
-      <button class="tab" onclick="showTab('gp',this)">Por gerente</button>
-    </div>
-
-    <div style="padding: 16px 0;">
-      <div id="tab-todos"    class="tab-content active"><div class="loader"><div class="spinner"></div></div></div>
-      <div id="tab-risco"    class="tab-content"></div>
-      <div id="tab-pausado"  class="tab-content"></div>
-      <div id="tab-cancel"   class="tab-content"></div>
-      <div id="tab-limitado" class="tab-content"></div>
-      <div id="tab-concluido"class="tab-content"></div>
-      <div id="tab-churn"    class="tab-content"></div>
-      <div id="tab-gp"       class="tab-content"></div>
+  <!-- ══════════════════════════ FLUXO ══════════════════════════ -->
+  <div class="produto-section" id="sec-fluxo">
+    <div class="kpi-grid" id="kpis-fluxo"></div>
+    <div>
+      <div class="tabs" id="tabs-fluxo">
+        <button class="tab active fluxo-tab" onclick="showTab('fluxo','todos',this)">Todos</button>
+        <button class="tab fluxo-tab" onclick="showTab('fluxo','risco',this)">Em risco</button>
+        <button class="tab fluxo-tab" onclick="showTab('fluxo','pausado',this)">Pausados</button>
+        <button class="tab fluxo-tab" onclick="showTab('fluxo','cancel',this)">Solic. Cancelamento</button>
+        <button class="tab fluxo-tab" onclick="showTab('fluxo','concluido',this)">Concluídos por mês</button>
+        <button class="tab fluxo-tab" onclick="showTab('fluxo','churn',this)">Churn</button>
+        <button class="tab fluxo-tab" onclick="showTab('fluxo','gp',this)">Por gerente</button>
+      </div>
+      <div style="padding:16px 0">
+        <div id="fluxo-tab-todos"    class="tab-content active"></div>
+        <div id="fluxo-tab-risco"    class="tab-content"></div>
+        <div id="fluxo-tab-pausado"  class="tab-content"></div>
+        <div id="fluxo-tab-cancel"   class="tab-content"></div>
+        <div id="fluxo-tab-concluido"class="tab-content"></div>
+        <div id="fluxo-tab-churn"    class="tab-content"></div>
+        <div id="fluxo-tab-gp"       class="tab-content"></div>
+      </div>
     </div>
   </div>
+
 </div>
-
 <div class="footer" id="footer">Aging - Report Diretoria · Prophix</div>
 
 <script>
-// ════════════════════════════════════════════════
-// ⚙️  CONFIGURE AQUI — cole a URL do seu Web App
-// ════════════════════════════════════════════════
 const API_URL = "https://script.google.com/macros/s/AKfycbwvaB6ixhU9b71Mul58TWyvVVg_M2u-pRvxZkiOUZTWaguKAhS_mZWLxb3bWLydUmWV/exec";
-// Exemplo: "https://script.google.com/macros/s/AKfycbx.../exec"
 
-// ════════════════════════════════════════════════
-// Regras de filtro (não alterar)
-// ════════════════════════════════════════════════
 const ST_AT    = ["Em andamento","Pausado","Solic. Cancelamento","Kick-off"];
 const ST_RISCO = ["Em andamento","Pausado","Solic. Cancelamento"];
 const MESES    = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
-const MESES_ORD= ["Jan/2026","Fev/2026","Mar/2026","Abr/2026","Mai/2026","Jun/2026",
-                  "Jul/2026","Ago/2026","Set/2026","Out/2026","Nov/2026"];
+const MESES_ORD= ["Jan/2026","Fev/2026","Mar/2026","Abr/2026","Mai/2026","Jun/2026","Jul/2026","Ago/2026","Set/2026","Out/2026","Nov/2026"];
 
-function isRisco(q){ return q === "Sim" || q === "Sim - Médio"; }
-function fmtD(s){
-  if(!s) return "—";
-  const d = new Date(s);
-  if(isNaN(d)) return s;
-  return MESES[d.getMonth()] + "/" + String(d.getFullYear()).slice(2);
-}
-function mesConc(s){
-  if(!s) return null;
-  const d = new Date(s);
-  if(isNaN(d)) return null;
-  return MESES[d.getMonth()] + "/" + d.getFullYear();
-}
+function isRisco(q){return q==="Sim"||q==="Sim - Médio"}
+function fmtD(s){if(!s)return"—";const d=new Date(s);if(isNaN(d))return s;return MESES[d.getMonth()]+"/"+String(d.getFullYear()).slice(2)}
+function mesConc(s){if(!s)return null;const d=new Date(s);if(isNaN(d))return null;return MESES[d.getMonth()]+"/"+d.getFullYear()}
 
-let filtros = new Set(ST_AT);
-let DADOS   = [];
+let filtrosPlano=new Set(ST_AT);
+let filtrosFluxo=new Set(ST_AT);
+let PLANO=[], FLUXO=[];
 
-// ════════════════════════════════════════════════
-// Carregar dados da API
-// ════════════════════════════════════════════════
 async function carregar(){
   setPill("loading","Atualizando...");
-  try {
-    const res  = await fetch(API_URL, {redirect: "follow", mode: "cors"});
-    const json = await res.json();
-    if(!json.ok) throw new Error(json.erro || "Erro na API");
+  try{
+    const res=await fetch(API_URL,{redirect:"follow",mode:"cors"});
+    const json=await res.json();
+    if(!json.ok)throw new Error(json.erro||"Erro na API");
 
-    DADOS = json.dados;
-    DADOS.forEach(p => {
-      p.r      = isRisco(p.risco);
-      p.prevFmt= fmtD(p.prevConc);
-      p.mc     = mesConc(p.entregaF2);
-    });
+    PLANO=json.plano||[];
+    FLUXO=json.fluxo||[];
+    PLANO.forEach(p=>{p.r=isRisco(p.risco);p.prevFmt=fmtD(p.prevConc);p.mc=mesConc(p.entregaF2)});
+    FLUXO.forEach(p=>{p.r=isRisco(p.risco);p.prevFmt=fmtD(p.prevConc);p.mc=mesConc(p.entregaF2)});
 
-    renderTudo();
-    const ts = new Date(json.ts);
-    setPill("ok", "Atualizado " + ts.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}));
-    document.getElementById("hdr-sub").textContent =
-      "Plano · Google Sheets · " + ts.toLocaleDateString("pt-BR");
-    document.getElementById("footer").textContent =
-      "Aging - Report Diretoria.xlsx · Prophix · última leitura: " + ts.toLocaleString("pt-BR");
+    renderProduto("plano",PLANO);
+    renderProduto("fluxo",FLUXO);
 
-  } catch(e){
-    setPill("err","Erro: " + e.message);
-  }
+    const ts=new Date(json.ts);
+    setPill("ok","Atualizado "+ts.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}));
+    document.getElementById("hdr-sub").textContent="Plano + Fluxo · Google Sheets · "+ts.toLocaleDateString("pt-BR");
+    document.getElementById("footer").textContent="Aging - Report Diretoria · Prophix · "+ts.toLocaleString("pt-BR");
+  }catch(e){setPill("err","Erro: "+e.message)}
 }
 
-function setPill(tipo, txt){
-  const p = document.getElementById("status-pill");
-  p.className = "status-pill " + tipo;
-  document.getElementById("status-txt").textContent = txt;
+function setPill(t,txt){
+  document.getElementById("status-pill").className="pill "+t;
+  document.getElementById("status-txt").textContent=txt;
 }
 
-// ════════════════════════════════════════════════
-// Render completo
-// ════════════════════════════════════════════════
-function renderTudo(){
-  const ativos    = DADOS.filter(p => ST_AT.includes(p.status));
-  const pausados  = DADOS.filter(p => p.status === "Pausado");
-  const cancels   = DADOS.filter(p => p.status === "Solic. Cancelamento");
-  const kickoffs  = DADOS.filter(p => p.status === "Kick-off");
-  const emRisco   = DADOS.filter(p => ST_RISCO.includes(p.status) && p.r);
-  const limitados = DADOS.filter(p => p.escopo === "Limitado" && ST_AT.includes(p.status));
-  const concluidos= DADOS.filter(p => p.status === "Concluído" && p.mc);
-  const churns    = DADOS.filter(p => p.status === "Churn");
-
-  renderKPIs(ativos, pausados, cancels, kickoffs, emRisco, limitados, churns, concluidos);
-  renderTodos(ativos);
-  renderRisco(emRisco);
-  renderPausados(pausados);
-  renderCancel(cancels);
-  renderLimitado(limitados);
-  renderConcluido(concluidos);
-  renderChurn(churns);
-  renderGP(ativos, emRisco);
+function showProduto(prod,el){
+  document.querySelectorAll(".produto-section").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll(".ptab").forEach(t=>t.classList.remove("active"));
+  document.getElementById("sec-"+prod).classList.add("active");
+  el.classList.add("active");
 }
 
-// ════════════════════════════════════════════════
-// KPIs
-// ════════════════════════════════════════════════
-function renderKPIs(at, pau, can, ko, risk, lim, churn, conc){
-  document.getElementById("kpis").innerHTML = `
-    <div class="kpi"><div class="kpi-label">Em andamento</div>
-      <div class="kpi-value c-blue">${DADOS.filter(p=>p.status==="Em andamento").length}</div>
-      <div class="kpi-sub">col W</div></div>
-    <div class="kpi"><div class="kpi-label">Pausado</div>
-      <div class="kpi-value c-yellow">${pau.length}</div>
-      <div class="kpi-sub">col W</div></div>
-    <div class="kpi"><div class="kpi-label">Solic. Cancelamento</div>
-      <div class="kpi-value c-red">${can.length}</div>
-      <div class="kpi-sub">col W</div></div>
-    <div class="kpi"><div class="kpi-label">Kick-off</div>
-      <div class="kpi-value c-dark">${ko.length}</div>
-      <div class="kpi-sub">col W</div></div>
-    <div class="kpi"><div class="kpi-label">Em risco</div>
-      <div class="kpi-value c-red">${risk.length}</div>
-      <div class="kpi-sub">col Q = Sim / Sim-Médio</div></div>
-    <div class="kpi"><div class="kpi-label">Escopo limitado</div>
-      <div class="kpi-value c-purple">${lim.length}</div>
-      <div class="kpi-sub">col U = Limitado</div></div>
-    <div class="kpi"><div class="kpi-label">Churn</div>
-      <div class="kpi-value c-red">${churn.length}</div>
-      <div class="kpi-sub">col W = Churn</div></div>
-    <div class="kpi"><div class="kpi-label">Concluídos</div>
-      <div class="kpi-value c-green">${DADOS.filter(p=>p.status==="Concluído").length}</div>
-      <div class="kpi-sub">col W = Concluído</div></div>`;
+function showTab(prod,id,el){
+  const prefix=prod+"-tab-";
+  document.querySelectorAll("[id^='"+prefix+"']").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll("#tabs-"+prod+" .tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById(prefix+id).classList.add("active");
+  el.classList.add("active");
 }
 
-// ════════════════════════════════════════════════
-// Helpers de badge / aging
-// ════════════════════════════════════════════════
-function ab(n){
-  n=parseInt(n)||0;
-  if(n>=300) return`<span class="badge b-red">${n}d</span>`;
-  if(n>=150) return`<span class="badge b-yellow">${n}d</span>`;
-  if(n>=60)  return`<span class="badge b-green">${n}d</span>`;
-  return `<span class="badge b-gray">${n>0?n+'d':'—'}</span>`;
-}
-function sb(v){
-  const m={"Em andamento":"b-blue","Pausado":"b-yellow","Solic. Cancelamento":"b-red",
-           "Kick-off":"b-green","Concluído":"b-green","Churn":"b-red"};
-  return`<span class="badge ${m[v]||'b-gray'}">${v}</span>`;
-}
-function qb(q){
-  if(q==="Sim")        return`<span class="badge b-red">Sim</span>`;
-  if(q==="Sim - Médio")return`<span class="badge b-yellow">Sim - Médio</span>`;
-  return`<span class="badge b-gray">—</span>`;
-}
-function ub(u){
-  return u==="Limitado"?`<span class="badge b-purple">Limitado</span>`:
-                        `<span class="badge b-gray">Antigo</span>`;
-}
+// ── Helpers visuais ──────────────────────────────────────────
+function ab(n){n=parseInt(n)||0;if(n>=300)return`<span class="badge b-red">${n}d</span>`;if(n>=150)return`<span class="badge b-yellow">${n}d</span>`;if(n>=60)return`<span class="badge b-green">${n}d</span>`;return`<span class="badge b-gray">${n>0?n+"d":"—"}</span>`}
+function sb(v){const m={"Em andamento":"b-blue","Pausado":"b-yellow","Solic. Cancelamento":"b-red","Kick-off":"b-green","Concluído":"b-green","Churn":"b-red"};return`<span class="badge ${m[v]||"b-gray"}">${v}</span>`}
+function qb(q){if(q==="Sim")return`<span class="badge b-red">Sim</span>`;if(q==="Sim - Médio")return`<span class="badge b-yellow">Sim - Médio</span>`;return`<span class="badge b-gray">—</span>`}
+function ub(u){return u==="Limitado"?`<span class="badge b-purple">Limitado</span>`:`<span class="badge b-gray">Antigo</span>`}
+function agrupar(arr,c){return arr.reduce((a,p)=>{a[p[c]]=(a[p[c]]||0)+1;return a},{})}
 
-// ════════════════════════════════════════════════
-// Aba Todos
-// ════════════════════════════════════════════════
-function renderTodos(ativos){
-  const el = document.getElementById("tab-todos");
-  el.innerHTML = `
+// ── Render por produto ───────────────────────────────────────
+function renderProduto(prod,D){
+  const isFluxo=prod==="fluxo";
+  const cor=isFluxo?"var(--orange)":"var(--accent)";
+  const corClass=isFluxo?"b-orange":"b-blue";
+  const fbtnClass=isFluxo?"fluxo":"";
+
+  const ativos   =D.filter(p=>ST_AT.includes(p.status));
+  const pausados =D.filter(p=>p.status==="Pausado");
+  const cancels  =D.filter(p=>p.status==="Solic. Cancelamento");
+  const kickoffs =D.filter(p=>p.status==="Kick-off");
+  const emRisco  =D.filter(p=>ST_RISCO.includes(p.status)&&p.r);
+  const limitados=D.filter(p=>p.escopo==="Limitado"&&ST_AT.includes(p.status));
+  const concluidos=D.filter(p=>p.status==="Concluído"&&p.mc);
+  const churns   =D.filter(p=>p.status==="Churn");
+
+  // KPIs
+  document.getElementById("kpis-"+prod).innerHTML=`
+    <div class="kpi"><div class="kpi-label">Em andamento</div><div class="kpi-value" style="color:${cor}">${D.filter(p=>p.status==="Em andamento").length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"}</div></div>
+    <div class="kpi"><div class="kpi-label">Pausado</div><div class="kpi-value c-yellow">${pausados.length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"}</div></div>
+    <div class="kpi"><div class="kpi-label">Solic. Cancelamento</div><div class="kpi-value c-red">${cancels.length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"}</div></div>
+    <div class="kpi"><div class="kpi-label">Kick-off</div><div class="kpi-value c-dark">${kickoffs.length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"}</div></div>
+    <div class="kpi"><div class="kpi-label">Em risco</div><div class="kpi-value c-red">${emRisco.length}</div><div class="kpi-sub">col ${isFluxo?"O":"Q"} = Sim</div></div>
+    ${!isFluxo?`<div class="kpi"><div class="kpi-label">Escopo limitado</div><div class="kpi-value c-purple">${limitados.length}</div><div class="kpi-sub">col V = Limitado</div></div>`:""}
+    <div class="kpi"><div class="kpi-label">Churn</div><div class="kpi-value c-red">${churns.length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"} = Churn</div></div>
+    <div class="kpi"><div class="kpi-label">Concluídos</div><div class="kpi-value c-green">${D.filter(p=>p.status==="Concluído").length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"} = Concluído</div></div>`;
+
+  // Todos
+  const filtros=isFluxo?filtrosFluxo:filtrosPlano;
+  document.getElementById(prod+"-tab-todos").innerHTML=`
     <div class="filter-bar"><span>Filtrar:</span>
-      ${ST_AT.map(s=>`<button class="fbtn ${filtros.has(s)?'on':''}"
-        onclick="toggleF(this,'${s}')">${s}</button>`).join('')}
+      ${ST_AT.map(s=>`<button class="fbtn ${filtros.has(s)?"on":""} ${fbtnClass}" onclick="toggleF('${prod}',this,'${s}')">${s}</button>`).join("")}
     </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th style="width:28%">Cliente</th><th style="width:8%">Aging</th>
-          <th style="width:14%">Status</th><th style="width:13%">Em risco</th>
-          <th style="width:10%">Escopo</th><th style="width:14%">Prev. encerr.</th>
-          <th style="width:13%">Gerente</th>
-        </tr></thead>
-        <tbody id="tbody-todos"></tbody>
-      </table>
-    </div>`;
-  filtrarTodos(ativos);
-}
-function filtrarTodos(ativos){
-  if(!ativos) ativos = DADOS.filter(p=>ST_AT.includes(p.status));
-  const f = ativos.filter(p=>filtros.has(p.status)).sort((a,b)=>(b.aging||0)-(a.aging||0));
-  const tb = document.getElementById("tbody-todos");
-  if(tb) tb.innerHTML = f.map(p=>`<tr>
-    <td title="${p.nome}">${p.nome}</td><td>${ab(p.aging)}</td><td>${sb(p.status)}</td>
-    <td>${qb(p.risco)}</td><td>${ub(p.escopo)}</td><td>${p.prevFmt}</td><td>${p.gerente}</td>
-  </tr>`).join('');
-}
-function toggleF(el,v){
-  filtros.has(v)?filtros.delete(v):filtros.add(v);
-  el.classList.toggle('on');
-  filtrarTodos();
-}
+    <div class="table-wrap"><table>
+      <thead><tr>
+        <th style="width:28%">Cliente</th><th style="width:8%">Aging</th>
+        <th style="width:14%">Status</th><th style="width:13%">Em risco</th>
+        ${!isFluxo?`<th style="width:10%">Escopo</th>`:""}
+        <th style="width:14%">Prev. encerr.</th><th style="width:13%">Gerente</th>
+      </tr></thead>
+      <tbody id="${prod}-tbody-todos"></tbody>
+    </table></div>`;
+  filtrarTodos(prod,D);
 
-// ════════════════════════════════════════════════
-// Aba Em Risco
-// ════════════════════════════════════════════════
-function renderRisco(emRisco){
-  const sim = emRisco.filter(p=>p.risco==="Sim").length;
-  const med = emRisco.filter(p=>p.risco==="Sim - Médio").length;
-  document.getElementById("tab-risco").innerHTML = `
+  // Em risco
+  const sim=emRisco.filter(p=>p.risco==="Sim").length;
+  const med=emRisco.filter(p=>p.risco==="Sim - Médio").length;
+  document.getElementById(prod+"-tab-risco").innerHTML=`
     <div class="sum3">
       <div class="sbox"><div class="sbox-val c-red">${sim}</div><div class="sbox-lbl">Sim</div></div>
       <div class="sbox"><div class="sbox-val c-yellow">${med}</div><div class="sbox-lbl">Sim - Médio</div></div>
       <div class="sbox"><div class="sbox-val c-red">${emRisco.length}</div><div class="sbox-lbl">Total em risco</div></div>
     </div>
     ${emRisco.sort((a,b)=>(b.aging||0)-(a.aging||0)).map(p=>`
-    <div class="card">
-      <div class="card-title">${p.nome} ${qb(p.risco)}</div>
-      <div class="card-desc">${p.motivo||'Ver planilha para detalhes.'}</div>
-      <div class="card-meta">${ab(p.aging)}${sb(p.status)}<span class="badge b-gray">${p.gerente}</span>
-        ${p.prevFmt!=='—'?`<span class="badge b-gray">Prev: ${p.prevFmt}</span>`:''}</div>
-    </div>`).join('')}`;
-}
+    <div class="card"><div class="card-title">${p.nome} ${qb(p.risco)}</div>
+    <div class="card-desc">${p.motivo||"Ver planilha."}</div>
+    <div class="card-meta">${ab(p.aging)}${sb(p.status)}<span class="badge b-gray">${p.gerente}</span>${p.prevFmt!=="—"?`<span class="badge b-gray">Prev: ${p.prevFmt}</span>`:""}</div></div>`).join("")}`;
 
-// ════════════════════════════════════════════════
-// Aba Pausados
-// ════════════════════════════════════════════════
-function renderPausados(pausados){
-  const gpP = agrupar(pausados,'gerente');
-  const maxP = Math.max(...Object.values(gpP),1);
-  document.getElementById("tab-pausado").innerHTML = `
-    <div class="sum3">
-      <div class="sbox"><div class="sbox-val c-yellow">${pausados.length}</div><div class="sbox-lbl">Total</div></div>
-      <div class="sbox"><div class="sbox-val c-red">${pausados.filter(p=>p.r).length}</div><div class="sbox-lbl">Em risco</div></div>
-      <div class="sbox"><div class="sbox-val c-dark">${pausados.length?Math.round(pausados.reduce((s,p)=>s+(p.aging||0),0)/pausados.length):0}d</div><div class="sbox-lbl">Aging médio</div></div>
-    </div>
-    <div class="bar-section"><div class="bar-title">Por gerente</div>
-      ${Object.entries(gpP).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`
-      <div class="bar-row"><span class="bar-lbl">${g}</span>
-        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxP*100)}%;background:var(--warning)"></div></div>
-        <span class="bar-num">${n}</span></div>`).join('')}
-    </div>
-    ${pausados.sort((a,b)=>(b.aging||0)-(a.aging||0)).map(p=>`
-    <div class="card">
-      <div class="card-title">${p.nome}</div>
-      <div class="card-desc">${p.motivo||'—'}</div>
-      <div class="card-meta">${ab(p.aging)}${p.r?qb(p.risco):''}
-        <span class="badge b-gray">${p.gerente}</span></div>
-    </div>`).join('')}`;
-}
+  // Pausados
+  renderListCards(prod,"pausado",pausados,"b-yellow","var(--warning)");
 
-// ════════════════════════════════════════════════
-// Aba Solic. Cancelamento
-// ════════════════════════════════════════════════
-function renderCancel(cancels){
-  document.getElementById("tab-cancel").innerHTML = cancels.length === 0
-    ? '<div class="loader">Nenhum projeto neste status</div>'
-    : cancels.sort((a,b)=>(b.aging||0)-(a.aging||0)).map(p=>`
-    <div class="card">
-      <div class="card-title">${p.nome}</div>
-      <div class="card-desc">${p.motivo||'—'}</div>
-      <div class="card-meta">${ab(p.aging)}${sb(p.status)}<span class="badge b-gray">${p.gerente}</span></div>
-    </div>`).join('');
-}
+  // Cancelamentos
+  document.getElementById(prod+"-tab-cancel").innerHTML=cancels.length===0
+    ?`<div style="text-align:center;padding:30px;color:var(--txt2)">Nenhum projeto</div>`
+    :cancels.sort((a,b)=>(b.aging||0)-(a.aging||0)).map(p=>`
+    <div class="card"><div class="card-title">${p.nome}</div>
+    <div class="card-desc">${p.motivo||"—"}</div>
+    <div class="card-meta">${ab(p.aging)}${sb(p.status)}<span class="badge b-gray">${p.gerente}</span></div></div>`).join("");
 
-// ════════════════════════════════════════════════
-// Aba Escopo Limitado
-// ════════════════════════════════════════════════
-function renderLimitado(limitados){
-  const gpL = agrupar(limitados,'gerente');
-  const maxL = Math.max(...Object.values(gpL),1);
-  document.getElementById("tab-limitado").innerHTML = `
-    <div class="sum3">
-      <div class="sbox"><div class="sbox-val c-purple">${limitados.length}</div><div class="sbox-lbl">Total</div></div>
-      <div class="sbox"><div class="sbox-val c-blue">${limitados.filter(p=>p.status==="Em andamento").length}</div><div class="sbox-lbl">Em andamento</div></div>
-      <div class="sbox"><div class="sbox-val c-red">${limitados.filter(p=>["Pausado","Solic. Cancelamento"].includes(p.status)).length}</div><div class="sbox-lbl">Pausado / Solic.</div></div>
-    </div>
-    <div class="bar-section"><div class="bar-title">Por gerente</div>
-      ${Object.entries(gpL).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`
-      <div class="bar-row"><span class="bar-lbl">${g}</span>
-        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxL*100)}%;background:var(--purple)"></div></div>
-        <span class="bar-num">${n}</span></div>`).join('')}
-    </div>
-    <div class="table-wrap"><table>
-      <thead><tr>
-        <th style="width:4%">#</th><th style="width:28%">Projeto</th><th style="width:11%">GP</th>
-        <th style="width:14%">Status</th><th style="width:14%">Em risco</th>
-        <th style="width:15%">Prev. conclusão</th><th style="width:14%">Aging</th>
-      </tr></thead>
-      <tbody>${limitados.sort((a,b)=>(b.aging||0)-(a.aging||0)).map((p,i)=>`<tr>
-        <td style="color:var(--txt3);font-size:11px">${i+1}</td>
-        <td style="font-weight:600;color:var(--accent)">${p.nome}</td>
-        <td>${p.gerente}</td><td>${sb(p.status)}</td><td>${qb(p.risco)}</td>
-        <td>${p.prevFmt}</td><td>${ab(p.aging)}</td>
-      </tr>`).join('')}</tbody>
-    </table></div>`;
-}
+  // Escopo limitado (só Plano)
+  if(!isFluxo){
+    const gpL=agrupar(limitados,"gerente");
+    const maxL=Math.max(...Object.values(gpL),1);
+    document.getElementById("plano-tab-limitado").innerHTML=`
+      <div class="sum3">
+        <div class="sbox"><div class="sbox-val c-purple">${limitados.length}</div><div class="sbox-lbl">Total</div></div>
+        <div class="sbox"><div class="sbox-val c-blue">${limitados.filter(p=>p.status==="Em andamento").length}</div><div class="sbox-lbl">Em andamento</div></div>
+        <div class="sbox"><div class="sbox-val c-red">${limitados.filter(p=>["Pausado","Solic. Cancelamento"].includes(p.status)).length}</div><div class="sbox-lbl">Pausado/Solic.</div></div>
+      </div>
+      <div class="bar-section"><div class="bar-title">Por gerente</div>
+        ${Object.entries(gpL).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`
+        <div class="bar-row"><span class="bar-lbl">${g}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxL*100)}%;background:var(--purple)"></div></div>
+          <span class="bar-num">${n}</span></div>`).join("")}
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th style="width:4%">#</th><th style="width:30%">Projeto</th><th style="width:12%">GP</th><th style="width:14%">Status</th><th style="width:14%">Em risco</th><th style="width:13%">Prev.</th><th style="width:13%">Aging</th></tr></thead>
+        <tbody>${limitados.sort((a,b)=>(b.aging||0)-(a.aging||0)).map((p,i)=>`<tr>
+          <td style="color:var(--txt3);font-size:11px">${i+1}</td>
+          <td style="font-weight:600;color:var(--accent)">${p.nome}</td>
+          <td>${p.gerente}</td><td>${sb(p.status)}</td><td>${qb(p.risco)}</td><td>${p.prevFmt}</td><td>${ab(p.aging)}</td>
+        </tr>`).join("")}</tbody>
+      </table></div>`;
+  }
 
-// ════════════════════════════════════════════════
-// Aba Concluídos por mês
-// ════════════════════════════════════════════════
-function renderConcluido(concluidos){
-  const porMes = {};
+  // Concluídos por mês
+  const porMes={};
   concluidos.forEach(c=>{if(!porMes[c.mc])porMes[c.mc]=[];porMes[c.mc].push(c)});
-  const mOrd = MESES_ORD.filter(m=>porMes[m]);
-  const maxM = Math.max(...mOrd.map(m=>porMes[m].length),1);
-  const total = DADOS.filter(p=>p.status==="Concluído").length;
-
-  document.getElementById("tab-concluido").innerHTML = `
+  const mOrd=MESES_ORD.filter(m=>porMes[m]);
+  const maxM=Math.max(...mOrd.map(m=>porMes[m].length),1);
+  document.getElementById(prod+"-tab-concluido").innerHTML=`
     <div class="sum3">
-      <div class="sbox"><div class="sbox-val c-green">${total}</div><div class="sbox-lbl">Total</div></div>
-      <div class="sbox"><div class="sbox-val c-blue">${mOrd.length}</div><div class="sbox-lbl">Meses c/ entrega</div></div>
+      <div class="sbox"><div class="sbox-val c-green">${D.filter(p=>p.status==="Concluído").length}</div><div class="sbox-lbl">Total</div></div>
+      <div class="sbox"><div class="sbox-val" style="color:${cor}">${mOrd.length}</div><div class="sbox-lbl">Meses c/ entrega</div></div>
       <div class="sbox"><div class="sbox-val c-green">${maxM}</div><div class="sbox-lbl">Pico mensal</div></div>
     </div>
-    <div class="bar-section"><div class="bar-title">Entregas por mês (col H)</div>
-      ${mOrd.map(m=>`
-      <div class="bar-row"><span class="bar-lbl">${m}</span>
+    <div class="bar-section"><div class="bar-title">Entregas por mês</div>
+      ${mOrd.map(m=>`<div class="bar-row"><span class="bar-lbl">${m}</span>
         <div class="bar-track"><div class="bar-fill" style="width:${Math.round(porMes[m].length/maxM*100)}%;background:var(--success)"></div></div>
-        <span class="bar-num">${porMes[m].length}</span></div>`).join('')}
+        <span class="bar-num">${porMes[m].length}</span></div>`).join("")}
     </div>
     ${mOrd.map((m,i)=>`
-    <div class="acc-header" onclick="toggleAcc(this,'acc${i}')">
-      <div class="acc-left">
-        <span class="acc-title">${m}</span>
-        <span class="acc-count">${porMes[m].length} entrega${porMes[m].length>1?'s':''}</span>
-        ${porMes[m].length===maxM?'<span class="badge b-green">Pico</span>':''}
-      </div>
+    <div class="acc-hdr" onclick="toggleAcc(this,'${prod}acc${i}')">
+      <div class="acc-left"><span class="acc-title">${m}</span><span class="acc-count">${porMes[m].length} entrega${porMes[m].length>1?"s":""}</span>${porMes[m].length===maxM?`<span class="badge b-green">Pico</span>`:""}</div>
       <span class="acc-chev">▾</span>
     </div>
-    <div class="acc-body" id="acc${i}">
-      ${porMes[m].map(c=>`<div class="acc-row">
-        <span>${c.nome}</span>
-        <div style="display:flex;gap:6px;align-items:center">
-          <span style="font-size:11px;color:var(--txt2)">${c.gerente}</span>
-          <span class="badge b-green">Concluído</span>
-        </div>
-      </div>`).join('')}
-    </div>`).join('')}`;
-}
+    <div class="acc-body" id="${prod}acc${i}">
+      ${porMes[m].map(c=>`<div class="acc-row"><span>${c.nome}</span><div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:var(--txt2)">${c.gerente}</span><span class="badge b-green">Concluído</span></div></div>`).join("")}
+    </div>`).join("")}`;
 
-// ════════════════════════════════════════════════
-// Aba Churn
-// ════════════════════════════════════════════════
-function renderChurn(churns){
-  const gpC = agrupar(churns,'gerente');
-  const maxC = Math.max(...Object.values(gpC),1);
-  const avgAging = churns.length ? Math.round(churns.reduce((s,p)=>s+(p.aging||0),0)/churns.length) : 0;
+  // Churn
+  renderListCards(prod,"churn",churns,"b-red","var(--danger)");
 
-  document.getElementById("tab-churn").innerHTML = `
-    <div class="sum3">
-      <div class="sbox"><div class="sbox-val c-red">${churns.length}</div><div class="sbox-lbl">Total</div></div>
-      <div class="sbox"><div class="sbox-val c-red">${churns.filter(p=>p.r).length}</div><div class="sbox-lbl">Marcados em risco</div></div>
-      <div class="sbox"><div class="sbox-val c-dark">${avgAging}d</div><div class="sbox-lbl">Aging médio</div></div>
-    </div>
-    <div class="bar-section"><div class="bar-title">Por gerente</div>
-      ${Object.entries(gpC).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`
-      <div class="bar-row"><span class="bar-lbl">${g}</span>
-        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxC*100)}%;background:var(--danger)"></div></div>
-        <span class="bar-num">${n}</span></div>`).join('')}
-    </div>
-    ${churns.sort((a,b)=>(b.aging||0)-(a.aging||0)).map(p=>`
-    <div class="card">
-      <div class="card-title">${p.nome}</div>
-      <div class="card-desc">${p.motivo||'—'}</div>
-      <div class="card-meta">${ab(p.aging)}<span class="badge b-red">Churn</span>
-        <span class="badge b-gray">${p.gerente}</span></div>
-    </div>`).join('')}`;
-}
-
-// ════════════════════════════════════════════════
-// Aba Por Gerente
-// ════════════════════════════════════════════════
-function renderGP(ativos, emRisco){
-  const gpT={}, gpR={}, gpPau={};
-  ativos.forEach(p=>{
-    gpT[p.gerente]=(gpT[p.gerente]||0)+1;
-    if(p.r && ST_RISCO.includes(p.status)) gpR[p.gerente]=(gpR[p.gerente]||0)+1;
-    if(p.status==="Pausado") gpPau[p.gerente]=(gpPau[p.gerente]||0)+1;
-  });
-  const maxGP = Math.max(...Object.values(gpT),1);
-
-  document.getElementById("tab-gp").innerHTML = `
+  // Por gerente
+  const gpT={},gpR={},gpPau={};
+  ativos.forEach(p=>{gpT[p.gerente]=(gpT[p.gerente]||0)+1;if(p.r&&ST_RISCO.includes(p.status))gpR[p.gerente]=(gpR[p.gerente]||0)+1;if(p.status==="Pausado")gpPau[p.gerente]=(gpPau[p.gerente]||0)+1});
+  const maxGP=Math.max(...Object.values(gpT),1);
+  document.getElementById(prod+"-tab-gp").innerHTML=`
     <div class="bar-section"><div class="bar-title">Projetos ativos por gerente</div>
       ${Object.entries(gpT).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`
       <div class="bar-row"><span class="bar-lbl">${g}</span>
-        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxGP*100)}%;background:var(--accent)"></div></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxGP*100)}%;background:${cor}"></div></div>
         <span class="bar-num">${n}</span>
         <div class="bar-badges">
           <span class="badge b-red" style="font-size:9px">${gpR[g]||0} risco</span>
           <span class="badge b-yellow" style="font-size:9px">${gpPau[g]||0} pausado</span>
         </div>
-      </div>`).join('')}
+      </div>`).join("")}
     </div>`;
 }
 
-// ════════════════════════════════════════════════
-// Utilitários
-// ════════════════════════════════════════════════
-function agrupar(arr, campo){
-  return arr.reduce((acc,p)=>{acc[p[campo]]=(acc[p[campo]]||0)+1;return acc},{});
-}
-function showTab(id, el){
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-'+id).classList.add('active');
-  el.classList.add('active');
-}
-function toggleAcc(header, id){
-  const body = document.getElementById(id);
-  const chev = header.querySelector('.acc-chev');
-  body.classList.toggle('open');
-  chev.classList.toggle('open');
+function renderListCards(prod,tipo,lista,badgeClass,barColor){
+  const gpX=agrupar(lista,"gerente");
+  const maxX=Math.max(...Object.values(gpX),1);
+  document.getElementById(prod+"-tab-"+tipo).innerHTML=`
+    <div class="sum3">
+      <div class="sbox"><div class="sbox-val" style="color:${barColor}">${lista.length}</div><div class="sbox-lbl">Total</div></div>
+      <div class="sbox"><div class="sbox-val c-red">${lista.filter(p=>p.r).length}</div><div class="sbox-lbl">Em risco</div></div>
+      <div class="sbox"><div class="sbox-val c-dark">${lista.length?Math.round(lista.reduce((s,p)=>s+(p.aging||0),0)/lista.length):0}d</div><div class="sbox-lbl">Aging médio</div></div>
+    </div>
+    <div class="bar-section"><div class="bar-title">Por gerente</div>
+      ${Object.entries(gpX).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`
+      <div class="bar-row"><span class="bar-lbl">${g}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxX*100)}%;background:${barColor}"></div></div>
+        <span class="bar-num">${n}</span></div>`).join("")}
+    </div>
+    ${lista.sort((a,b)=>(b.aging||0)-(a.aging||0)).map(p=>`
+    <div class="card"><div class="card-title">${p.nome}</div>
+    <div class="card-desc">${p.motivo||"—"}</div>
+    <div class="card-meta">${ab(p.aging)}${p.r?qb(p.risco):""}${sb(p.status)}<span class="badge b-gray">${p.gerente}</span></div></div>`).join("")}`;
 }
 
-// ════════════════════════════════════════════════
-// Init
-// ════════════════════════════════════════════════
+function filtrarTodos(prod,D){
+  if(!D)D=prod==="fluxo"?FLUXO:PLANO;
+  const filtros=prod==="fluxo"?filtrosFluxo:filtrosPlano;
+  const isFluxo=prod==="fluxo";
+  const f=D.filter(p=>ST_AT.includes(p.status)&&filtros.has(p.status)).sort((a,b)=>(b.aging||0)-(a.aging||0));
+  const tb=document.getElementById(prod+"-tbody-todos");
+  if(tb)tb.innerHTML=f.map(p=>`<tr>
+    <td title="${p.nome}">${p.nome}</td><td>${ab(p.aging)}</td><td>${sb(p.status)}</td>
+    <td>${qb(p.risco)}</td>${!isFluxo?`<td>${ub(p.escopo)}</td>`:""}
+    <td>${p.prevFmt}</td><td>${p.gerente}</td>
+  </tr>`).join("");
+}
+
+function toggleF(prod,el,v){
+  const filtros=prod==="fluxo"?filtrosFluxo:filtrosPlano;
+  filtros.has(v)?filtros.delete(v):filtros.add(v);
+  el.classList.toggle("on");
+  filtrarTodos(prod);
+}
+
+function toggleAcc(hdr,id){
+  const b=document.getElementById(id);
+  const c=hdr.querySelector(".acc-chev");
+  b.classList.toggle("open");
+  c.classList.toggle("open");
+}
+
 carregar();
-// Auto-refresh a cada 5 minutos
-setInterval(carregar, 5 * 60 * 1000);
+setInterval(carregar,5*60*1000);
 </script>
 </body>
 </html>
