@@ -251,8 +251,8 @@ const MESES     = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","
 const MESES_ORD = ["Jan/2026","Fev/2026","Mar/2026","Abr/2026","Mai/2026","Jun/2026","Jul/2026","Ago/2026","Set/2026","Out/2026","Nov/2026"];
 
 function isRisco(q){return q==="Sim"||q==="Sim - Médio"}
-function fmtD(s){if(!s)return"—";const d=new Date(s);if(isNaN(d))return s;return MESES[d.getMonth()]+"/"+String(d.getFullYear()).slice(2)}
-function mesConc(s){if(!s)return null;const d=new Date(s);if(isNaN(d))return null;return MESES[d.getMonth()]+"/"+d.getFullYear()}
+function fmtD(s){if(!s)return"—";const d=new Date(s);if(isNaN(d))return s;return MESES[d.getUTCMonth()]+"/"+String(d.getUTCFullYear()).slice(2)}
+function mesConc(s){if(!s)return null;const d=new Date(s);if(isNaN(d))return null;return MESES[d.getUTCMonth()]+"/"+d.getUTCFullYear()}
 
 let filtrosPlano=new Set(ST_AT);
 let filtrosFPA=new Set(ST_AT_FPA);
