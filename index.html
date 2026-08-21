@@ -266,7 +266,7 @@ let DADOS   = [];
 async function carregar(){
   setPill("loading","Atualizando...");
   try {
-    const res  = await fetch(API_URL);
+    const res  = await fetch(API_URL, {redirect: "follow", mode: "cors"});
     const json = await res.json();
     if(!json.ok) throw new Error(json.erro || "Erro na API");
 
