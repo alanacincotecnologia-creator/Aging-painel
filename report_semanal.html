@@ -220,8 +220,8 @@ const ST_AT=["Em andamento","Alinhamento","Pausado","Solic. Cancelamento","Kick-
 const charts={};
 
 function isRisco(q){return q==="Sim"||q==="Sim - Médio"}
-function mesStr(s){if(!s)return null;const d=new Date(s);if(isNaN(d))return null;return MESES[d.getMonth()]+"/"+d.getFullYear()}
-function mesLabel(s){if(!s)return null;const d=new Date(s);if(isNaN(d))return null;return MESES_CURTOS[d.getMonth()]+"/"+String(d.getFullYear()).slice(2)}
+function mesStr(s){if(!s)return null;const d=new Date(s);if(isNaN(d))return null;return MESES[d.getUTCMonth()]+"/"+d.getUTCFullYear()}
+function mesLabel(s){if(!s)return null;const d=new Date(s);if(isNaN(d))return null;return MESES_CURTOS[d.getUTCMonth()]+"/"+String(d.getUTCFullYear()).slice(2)}
 function fmtD(s){if(!s)return"—";const d=new Date(s);if(isNaN(d))return s;return MESES[d.getMonth()]+"/"+String(d.getFullYear()).slice(2)}
 
 function setPill(t,txt){document.getElementById("status-pill").className="pill "+t;document.getElementById("status-txt").textContent=txt}
