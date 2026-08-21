@@ -348,10 +348,13 @@ function renderProduto(prod,D){
     </div>
     <div class="table-wrap"><table>
       <thead><tr>
-        <th style="width:28%">Cliente</th><th style="width:8%">Aging</th>
-        <th style="width:14%">Status</th><th style="width:13%">Em risco</th>
-        ${!isFluxo?`<th style="width:10%">Escopo</th>`:""}
-        <th style="width:14%">Prev. encerr.</th><th style="width:13%">Gerente</th>
+        <th style="width:28%;cursor:pointer;user-select:none" onclick="sortTabela('${prod}','nome')">Cliente <span id="${prod}-sort-nome">↕</span></th>
+        <th style="width:8%;cursor:pointer;user-select:none" onclick="sortTabela('${prod}','aging')">Aging <span id="${prod}-sort-aging">↓</span></th>
+        <th style="width:14%;cursor:pointer;user-select:none" onclick="sortTabela('${prod}','status')">Status <span id="${prod}-sort-status">↕</span></th>
+        <th style="width:13%;cursor:pointer;user-select:none" onclick="sortTabela('${prod}','risco')">Em risco <span id="${prod}-sort-risco">↕</span></th>
+        ${!isFluxo?`<th style="width:10%;cursor:pointer;user-select:none" onclick="sortTabela('${prod}','escopo')">Escopo <span id="${prod}-sort-escopo">↕</span></th>`:""}
+        <th style="width:14%;cursor:pointer;user-select:none" onclick="sortTabela('${prod}','prevFmt')">Prev. encerr. <span id="${prod}-sort-prevFmt">↕</span></th>
+        <th style="width:13%;cursor:pointer;user-select:none" onclick="sortTabela('${prod}','gerente')">Gerente <span id="${prod}-sort-gerente">↕</span></th>
       </tr></thead>
       <tbody id="${prod}-tbody-todos"></tbody>
     </table></div>`;
@@ -486,13 +489,37 @@ function getData(prod){
   return PLANO;
 }
 
+// Estado de ordenação por produto
+const sortState={
+  plano:{col:"aging",dir:-1},
+  fpa:  {col:"aging",dir:-1},
+  fluxo:{col:"aging",dir:-1}
+};
+
+function sortTabela(prod,col){
+  const st=sortState[prod];
+  if(st.col===col) st.dir*=-1;
+  else{st.col=col;st.dir=col==="aging"?-1:1;}
+  // Atualiza ícones
+  ["nome","aging","status","risco","escopo","prevFmt","gerente"].forEach(function(c){
+    const el=document.getElementById(prod+"-sort-"+c);
+    if(el) el.textContent=st.col===c?(st.dir===1?"↑":"↓"):"↕";
+  });
+  filtrarTodos(prod);
+}
+
 function filtrarTodos(prod,D){
   if(!D) D=getData(prod);
   const filtros=getFiltros(prod);
   const isFluxo=prod==="fluxo";
   const isFPA=prod==="fpa";
   const ST_ATIVO=isFPA?ST_AT_FPA:ST_AT;
-  const f=D.filter(p=>ST_ATIVO.includes(p.status)&&filtros.has(p.status)).sort((a,b)=>(b.aging||0)-(a.aging||0));
+  const st=sortState[prod]||{col:"aging",dir:-1};
+  const f=D.filter(p=>ST_ATIVO.includes(p.status)&&filtros.has(p.status)).sort(function(a,b){
+    const va=a[st.col]||"", vb=b[st.col]||"";
+    if(st.col==="aging") return st.dir*((parseInt(vb)||0)-(parseInt(va)||0));
+    return st.dir*(String(va).localeCompare(String(vb),"pt-BR"));
+  });
   const tb=document.getElementById(prod+"-tbody-todos");
   if(tb)tb.innerHTML=f.map(p=>`<tr>
     <td title="${p.nome}">${p.nome}</td><td>${ab(p.aging)}</td><td>${sb(p.status)}</td>
