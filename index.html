@@ -7,15 +7,13 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#F8F9FB;--surface:#FFFFFF;--surface2:#F1F3F7;--border:#E2E6ED;
+  --bg:#F8F9FB;--surface:#FFF;--surface2:#F1F3F7;--border:#E2E6ED;
   --txt:#1E293B;--txt2:#64748B;--txt3:#94A3B8;
-  --accent:#2563EB;--success:#16A34A;--warning:#D97706;--danger:#DC2626;--purple:#7C3AED;
-  --orange:#EA580C;
+  --accent:#2563EB;--success:#16A34A;--warning:#D97706;--danger:#DC2626;
+  --purple:#7C3AED;--orange:#EA580C;--teal:#0D9488;
   --radius:10px;
 }
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--txt);font-size:13px}
-
-/* Header */
 .hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:12px}
 .hdr-icon{width:36px;height:36px;border-radius:8px;background:#EFF6FF;display:flex;align-items:center;justify-content:center;font-size:18px}
 .hdr-title h1{font-size:15px;font-weight:600}
@@ -29,57 +27,59 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .btn-refresh{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);color:var(--txt);font-size:12px;font-weight:500;cursor:pointer}
 .btn-refresh:hover{background:var(--bg)}
 
-/* Produto tabs (Plano / Fluxo) */
-.produto-tabs{display:flex;gap:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px}
-.ptab{padding:12px 20px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;color:var(--txt2);display:flex;align-items:center;gap:7px;transition:color .15s}
-.ptab.active.plano{color:var(--accent);border-bottom-color:var(--accent)}
-.ptab.active.fluxo{color:var(--orange);border-bottom-color:var(--orange)}
+/* Produto tabs */
+.produto-tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px}
+.ptab{padding:12px 18px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;color:var(--txt2);display:flex;align-items:center;gap:7px}
 .ptab:hover:not(.active){color:var(--txt);background:var(--bg)}
-.badge-prod{padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600}
+.ptab.active.p-plano  {color:var(--accent);border-bottom-color:var(--accent)}
+.ptab.active.p-fpa    {color:var(--teal);border-bottom-color:var(--teal)}
+.ptab.active.p-fluxo  {color:var(--orange);border-bottom-color:var(--orange)}
+.bp{padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700}
 .bp-plano{background:#EFF6FF;color:var(--accent)}
+.bp-fpa  {background:#F0FDFA;color:var(--teal)}
 .bp-fluxo{background:#FFF7ED;color:var(--orange)}
 
-/* Main */
 .main{padding:20px 24px;display:flex;flex-direction:column;gap:16px}
-.produto-section{display:none}
-.produto-section.active{display:flex;flex-direction:column;gap:16px}
+.psec{display:none}.psec.active{display:flex;flex-direction:column;gap:16px}
 
 /* KPIs */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
 .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
-.kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);margin-bottom:6px}
-.kpi-value{font-size:26px;font-weight:600;line-height:1}
+.kpi-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);margin-bottom:6px}
+.kpi-val{font-size:26px;font-weight:600;line-height:1}
 .kpi-sub{font-size:10px;color:var(--txt3);margin-top:3px}
-.c-blue{color:var(--accent)}.c-yellow{color:var(--warning)}.c-red{color:var(--danger)}
-.c-green{color:var(--success)}.c-purple{color:var(--purple)}.c-dark{color:var(--txt)}.c-orange{color:var(--orange)}
+.c-blue{color:var(--accent)}.c-yel{color:var(--warning)}.c-red{color:var(--danger)}
+.c-grn{color:var(--success)}.c-pur{color:var(--purple)}.c-drk{color:var(--txt)}
+.c-teal{color:var(--teal)}.c-ora{color:var(--orange)}
 
 /* Sub-tabs */
-.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);background:var(--surface);padding:0 0;flex-wrap:wrap}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap}
 .tab{padding:9px 13px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;color:var(--txt2);white-space:nowrap}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.tab.active.fluxo-tab{color:var(--orange);border-bottom-color:var(--orange)}
 .tab:hover:not(.active){color:var(--txt);background:var(--bg)}
-.tab-content{display:none}
-.tab-content.active{display:block}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab.active.t-fpa{color:var(--teal);border-bottom-color:var(--teal)}
+.tab.active.t-fluxo{color:var(--orange);border-bottom-color:var(--orange)}
+.tc{display:none}.tc.active{display:block}
 
 /* Table */
-.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.tw{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
 table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
 thead tr{background:var(--bg)}
 th{padding:9px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
-td{padding:9px 12px;color:var(--txt);border-bottom:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--bg)}
 
 /* Badges */
 .badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600;white-space:nowrap}
 .b-blue{background:#EFF6FF;color:var(--accent)}
-.b-yellow{background:#FFFBEB;color:var(--warning)}
+.b-yel{background:#FFFBEB;color:var(--warning)}
 .b-red{background:#FEF2F2;color:var(--danger)}
-.b-green{background:#F0FDF4;color:var(--success)}
-.b-purple{background:#F5F3FF;color:var(--purple)}
+.b-grn{background:#F0FDF4;color:var(--success)}
+.b-pur{background:#F5F3FF;color:var(--purple)}
 .b-gray{background:var(--bg);color:var(--txt2);border:1px solid var(--border)}
-.b-orange{background:#FFF7ED;color:var(--orange)}
+.b-teal{background:#F0FDFA;color:var(--teal)}
+.b-ora{background:#FFF7ED;color:var(--orange)}
 
 /* Cards */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px}
@@ -88,15 +88,15 @@ tr:hover td{background:var(--bg)}
 .card-meta{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}
 
 /* Bars */
-.bar-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.bar-sec{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
 .bar-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--txt2);margin-bottom:12px}
 .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
 .bar-row:last-child{margin-bottom:0}
 .bar-lbl{font-size:11px;color:var(--txt2);width:80px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar-track{flex:1;height:8px;background:var(--border);border-radius:99px;overflow:hidden}
 .bar-fill{height:100%;border-radius:99px}
-.bar-num{font-size:12px;font-weight:600;color:var(--txt);width:24px;text-align:right}
-.bar-badges{display:flex;gap:5px}
+.bar-num{font-size:12px;font-weight:600;width:24px;text-align:right}
+.bar-bdgs{display:flex;gap:5px}
 
 /* Accordion */
 .acc-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);border-radius:var(--radius);cursor:pointer;border:1px solid var(--border);margin-bottom:6px}
@@ -106,26 +106,25 @@ tr:hover td{background:var(--bg)}
 .acc-count{font-size:11px;color:var(--txt2)}
 .acc-chev{font-size:16px;color:var(--txt3);transition:transform .2s}
 .acc-chev.open{transform:rotate(180deg)}
-.acc-body{display:none;margin-bottom:10px}
-.acc-body.open{display:block}
+.acc-body{display:none;margin-bottom:10px}.acc-body.open{display:block}
 .acc-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px;background:var(--surface)}
 .acc-row:first-child{border-radius:var(--radius) var(--radius) 0 0}
 .acc-row:last-child{border-bottom:none;border-radius:0 0 var(--radius) var(--radius)}
 
-/* Sum boxes */
+/* Sum */
 .sum3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
 .sbox{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center}
 .sbox-val{font-size:22px;font-weight:600}
 .sbox-lbl{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
 
 /* Filter */
-.filter-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.filter-bar span{font-size:11px;color:var(--txt2)}
+.fbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.fbar span{font-size:11px;color:var(--txt2)}
 .fbtn{padding:4px 11px;border-radius:99px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--txt2)}
 .fbtn.on{border-color:var(--accent);background:#EFF6FF;color:var(--accent)}
+.fbtn.on.fpa{border-color:var(--teal);background:#F0FDFA;color:var(--teal)}
 .fbtn.on.fluxo{border-color:var(--orange);background:#FFF7ED;color:var(--orange)}
 
-/* Footer */
 .footer{text-align:center;padding:14px;font-size:10px;color:var(--txt3);border-top:1px solid var(--border)}
 </style>
 </head>
@@ -143,325 +142,287 @@ tr:hover td{background:var(--bg)}
   </div>
 </div>
 
-<!-- PRODUTO TABS -->
 <div class="produto-tabs">
-  <button class="ptab active plano" onclick="showProduto('plano',this)">
-    <span class="badge-prod bp-plano">PLANO</span> Plano
-  </button>
-  <button class="ptab fluxo" onclick="showProduto('fluxo',this)">
-    <span class="badge-prod bp-fluxo">FLUXO</span> Fluxo
-  </button>
+  <button class="ptab active p-plano" onclick="showProd('plano',this)"><span class="bp bp-plano">PLANO</span>Plano</button>
+  <button class="ptab p-fpa"          onclick="showProd('fpa',this)"><span class="bp bp-fpa">FP&amp;A</span>FP&amp;A Plus</button>
+  <button class="ptab p-fluxo"        onclick="showProd('fluxo',this)"><span class="bp bp-fluxo">FLUXO</span>Fluxo</button>
 </div>
 
 <div class="main">
-
-  <!-- ══════════════════════════ PLANO ══════════════════════════ -->
-  <div class="produto-section active" id="sec-plano">
-    <div class="kpi-grid" id="kpis-plano"></div>
-    <div>
-      <div class="tabs" id="tabs-plano">
-        <button class="tab active" onclick="showTab('plano','todos',this)">Todos</button>
-        <button class="tab" onclick="showTab('plano','risco',this)">Em risco</button>
-        <button class="tab" onclick="showTab('plano','pausado',this)">Pausados</button>
-        <button class="tab" onclick="showTab('plano','cancel',this)">Solic. Cancelamento</button>
-        <button class="tab" onclick="showTab('plano','limitado',this)">⬡ Escopo limitado</button>
-        <button class="tab" onclick="showTab('plano','concluido',this)">Concluídos por mês</button>
-        <button class="tab" onclick="showTab('plano','churn',this)">Churn</button>
-        <button class="tab" onclick="showTab('plano','gp',this)">Por gerente</button>
-      </div>
-      <div style="padding:16px 0">
-        <div id="plano-tab-todos"    class="tab-content active"></div>
-        <div id="plano-tab-risco"    class="tab-content"></div>
-        <div id="plano-tab-pausado"  class="tab-content"></div>
-        <div id="plano-tab-cancel"   class="tab-content"></div>
-        <div id="plano-tab-limitado" class="tab-content"></div>
-        <div id="plano-tab-concluido"class="tab-content"></div>
-        <div id="plano-tab-churn"    class="tab-content"></div>
-        <div id="plano-tab-gp"       class="tab-content"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════ FLUXO ══════════════════════════ -->
-  <div class="produto-section" id="sec-fluxo">
-    <div class="kpi-grid" id="kpis-fluxo"></div>
-    <div>
-      <div class="tabs" id="tabs-fluxo">
-        <button class="tab active fluxo-tab" onclick="showTab('fluxo','todos',this)">Todos</button>
-        <button class="tab fluxo-tab" onclick="showTab('fluxo','risco',this)">Em risco</button>
-        <button class="tab fluxo-tab" onclick="showTab('fluxo','pausado',this)">Pausados</button>
-        <button class="tab fluxo-tab" onclick="showTab('fluxo','cancel',this)">Solic. Cancelamento</button>
-        <button class="tab fluxo-tab" onclick="showTab('fluxo','concluido',this)">Concluídos por mês</button>
-        <button class="tab fluxo-tab" onclick="showTab('fluxo','churn',this)">Churn</button>
-        <button class="tab fluxo-tab" onclick="showTab('fluxo','gp',this)">Por gerente</button>
-      </div>
-      <div style="padding:16px 0">
-        <div id="fluxo-tab-todos"    class="tab-content active"></div>
-        <div id="fluxo-tab-risco"    class="tab-content"></div>
-        <div id="fluxo-tab-pausado"  class="tab-content"></div>
-        <div id="fluxo-tab-cancel"   class="tab-content"></div>
-        <div id="fluxo-tab-concluido"class="tab-content"></div>
-        <div id="fluxo-tab-churn"    class="tab-content"></div>
-        <div id="fluxo-tab-gp"       class="tab-content"></div>
-      </div>
-    </div>
-  </div>
-
+  <div class="psec active" id="sec-plano"></div>
+  <div class="psec"        id="sec-fpa"></div>
+  <div class="psec"        id="sec-fluxo"></div>
 </div>
+
 <div class="footer" id="footer">Aging - Report Diretoria · Prophix</div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwvaB6ixhU9b71Mul58TWyvVVg_M2u-pRvxZkiOUZTWaguKAhS_mZWLxb3bWLydUmWV/exec";
+const API_URL="https://script.google.com/macros/s/AKfycbwvaB6ixhU9b71Mul58TWyvVVg_M2u-pRvxZkiOUZTWaguKAhS_mZWLxb3bWLydUmWV/exec";
+const ST_AT=["Em andamento","Pausado","Solic. Cancelamento","Kick-off"];
+const ST_R=["Em andamento","Pausado","Solic. Cancelamento"];
+const MS=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+const MORD=["Jan/2026","Fev/2026","Mar/2026","Abr/2026","Mai/2026","Jun/2026","Jul/2026","Ago/2026","Set/2026","Out/2026","Nov/2026"];
 
-const ST_AT    = ["Em andamento","Pausado","Solic. Cancelamento","Kick-off"];
-const ST_RISCO = ["Em andamento","Pausado","Solic. Cancelamento"];
-const MESES    = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
-const MESES_ORD= ["Jan/2026","Fev/2026","Mar/2026","Abr/2026","Mai/2026","Jun/2026","Jul/2026","Ago/2026","Set/2026","Out/2026","Nov/2026"];
+const PRODS={
+  plano:{label:"Plano",     cor:"var(--accent)", badgeClass:"b-blue",  fbtnClass:"",      tabClass:"",        colStatus:"W", colRisco:"Q", hasEscopo:true},
+  fpa:  {label:"FP&A Plus", cor:"var(--teal)",   badgeClass:"b-teal",  fbtnClass:"fpa",   tabClass:"t-fpa",   colStatus:"W", colRisco:"Q", hasEscopo:true},
+  fluxo:{label:"Fluxo",     cor:"var(--orange)", badgeClass:"b-ora",   fbtnClass:"fluxo", tabClass:"t-fluxo", colStatus:"Q", colRisco:"O", hasEscopo:false},
+};
+const filtros={plano:new Set(ST_AT),fpa:new Set(ST_AT),fluxo:new Set(ST_AT)};
+const DATA={plano:[],fpa:[],fluxo:[]};
 
-function isRisco(q){return q==="Sim"||q==="Sim - Médio"}
-function fmtD(s){if(!s)return"—";const d=new Date(s);if(isNaN(d))return s;return MESES[d.getMonth()]+"/"+String(d.getFullYear()).slice(2)}
-function mesConc(s){if(!s)return null;const d=new Date(s);if(isNaN(d))return null;return MESES[d.getMonth()]+"/"+d.getFullYear()}
-
-let filtrosPlano=new Set(ST_AT);
-let filtrosFluxo=new Set(ST_AT);
-let PLANO=[], FLUXO=[];
+function isR(q){return q==="Sim"||q==="Sim - Médio"}
+function fmtD(s){if(!s)return"—";const d=new Date(s);if(isNaN(d))return s;return MS[d.getMonth()]+"/"+String(d.getFullYear()).slice(2)}
+function mc(s){if(!s)return null;const d=new Date(s);if(isNaN(d))return null;return MS[d.getMonth()]+"/"+d.getFullYear()}
+function ag(arr,k){return arr.reduce((a,p)=>{a[p[k]]=(a[p[k]]||0)+1;return a},{})}
 
 async function carregar(){
   setPill("loading","Atualizando...");
   try{
     const res=await fetch(API_URL,{redirect:"follow",mode:"cors"});
     const json=await res.json();
-    if(!json.ok)throw new Error(json.erro||"Erro na API");
-
-    PLANO=json.plano||[];
-    FLUXO=json.fluxo||[];
-    PLANO.forEach(p=>{p.r=isRisco(p.risco);p.prevFmt=fmtD(p.prevConc);p.mc=mesConc(p.entregaF2)});
-    FLUXO.forEach(p=>{p.r=isRisco(p.risco);p.prevFmt=fmtD(p.prevConc);p.mc=mesConc(p.entregaF2)});
-
-    renderProduto("plano",PLANO);
-    renderProduto("fluxo",FLUXO);
-
+    if(!json.ok)throw new Error(json.erro||"Erro");
+    ["plano","fpaplus","fluxo"].forEach(function(k){
+      const key=k==="fpaplus"?"fpa":k;
+      DATA[key]=(json[k]||[]).map(function(p){return Object.assign({},p,{r:isR(p.risco),pf:fmtD(p.prevConc),mc:mc(p.entregaF2)})});
+    });
+    Object.keys(PRODS).forEach(function(p){renderProd(p)});
     const ts=new Date(json.ts);
     setPill("ok","Atualizado "+ts.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}));
-    document.getElementById("hdr-sub").textContent="Plano + Fluxo · Google Sheets · "+ts.toLocaleDateString("pt-BR");
+    document.getElementById("hdr-sub").textContent="Plano · FP&A Plus · Fluxo · Google Sheets · "+ts.toLocaleDateString("pt-BR");
     document.getElementById("footer").textContent="Aging - Report Diretoria · Prophix · "+ts.toLocaleString("pt-BR");
   }catch(e){setPill("err","Erro: "+e.message)}
 }
 
-function setPill(t,txt){
-  document.getElementById("status-pill").className="pill "+t;
-  document.getElementById("status-txt").textContent=txt;
+function setPill(t,txt){document.getElementById("status-pill").className="pill "+t;document.getElementById("status-txt").textContent=txt}
+function showProd(p,el){
+  document.querySelectorAll(".psec").forEach(function(s){s.classList.remove("active")});
+  document.querySelectorAll(".ptab").forEach(function(t){t.classList.remove("active")});
+  document.getElementById("sec-"+p).classList.add("active");
+  el.classList.add("active");
 }
-
-function showProduto(prod,el){
-  document.querySelectorAll(".produto-section").forEach(s=>s.classList.remove("active"));
-  document.querySelectorAll(".ptab").forEach(t=>t.classList.remove("active"));
-  document.getElementById("sec-"+prod).classList.add("active");
+function showTab(p,id,el){
+  document.querySelectorAll("#sec-"+p+" .tc").forEach(function(t){t.classList.remove("active")});
+  document.querySelectorAll("#sec-"+p+" .tab").forEach(function(t){t.classList.remove("active")});
+  document.getElementById(p+"-"+id).classList.add("active");
   el.classList.add("active");
 }
 
-function showTab(prod,id,el){
-  const prefix=prod+"-tab-";
-  document.querySelectorAll("[id^='"+prefix+"']").forEach(t=>t.classList.remove("active"));
-  document.querySelectorAll("#tabs-"+prod+" .tab").forEach(t=>t.classList.remove("active"));
-  document.getElementById(prefix+id).classList.add("active");
-  el.classList.add("active");
-}
+// Helpers visuais
+function ab(n){n=parseInt(n)||0;if(n>=300)return`<span class="badge b-red">${n}d</span>`;if(n>=150)return`<span class="badge b-yel">${n}d</span>`;if(n>=60)return`<span class="badge b-grn">${n}d</span>`;return`<span class="badge b-gray">${n>0?n+"d":"—"}</span>`}
+function sb(v){const m={"Em andamento":"b-blue","Pausado":"b-yel","Solic. Cancelamento":"b-red","Kick-off":"b-grn","Concluído":"b-grn","Churn":"b-red"};return`<span class="badge ${m[v]||"b-gray"}">${v}</span>`}
+function qb(q){if(q==="Sim")return`<span class="badge b-red">Sim</span>`;if(q==="Sim - Médio")return`<span class="badge b-yel">Sim - Médio</span>`;return`<span class="badge b-gray">—</span>`}
+function ub(u){return u==="Limitado"?`<span class="badge b-pur">Limitado</span>`:`<span class="badge b-gray">Antigo</span>`}
 
-// ── Helpers visuais ──────────────────────────────────────────
-function ab(n){n=parseInt(n)||0;if(n>=300)return`<span class="badge b-red">${n}d</span>`;if(n>=150)return`<span class="badge b-yellow">${n}d</span>`;if(n>=60)return`<span class="badge b-green">${n}d</span>`;return`<span class="badge b-gray">${n>0?n+"d":"—"}</span>`}
-function sb(v){const m={"Em andamento":"b-blue","Pausado":"b-yellow","Solic. Cancelamento":"b-red","Kick-off":"b-green","Concluído":"b-green","Churn":"b-red"};return`<span class="badge ${m[v]||"b-gray"}">${v}</span>`}
-function qb(q){if(q==="Sim")return`<span class="badge b-red">Sim</span>`;if(q==="Sim - Médio")return`<span class="badge b-yellow">Sim - Médio</span>`;return`<span class="badge b-gray">—</span>`}
-function ub(u){return u==="Limitado"?`<span class="badge b-purple">Limitado</span>`:`<span class="badge b-gray">Antigo</span>`}
-function agrupar(arr,c){return arr.reduce((a,p)=>{a[p[c]]=(a[p[c]]||0)+1;return a},{})}
+function renderProd(p){
+  const D=DATA[p], cfg=PRODS[p];
+  const cor=cfg.cor, bc=cfg.badgeClass, fc=cfg.fbtnClass, tc=cfg.tabClass;
 
-// ── Render por produto ───────────────────────────────────────
-function renderProduto(prod,D){
-  const isFluxo=prod==="fluxo";
-  const cor=isFluxo?"var(--orange)":"var(--accent)";
-  const corClass=isFluxo?"b-orange":"b-blue";
-  const fbtnClass=isFluxo?"fluxo":"";
+  const ativos   =D.filter(function(x){return ST_AT.includes(x.status)});
+  const pausados =D.filter(function(x){return x.status==="Pausado"});
+  const cancels  =D.filter(function(x){return x.status==="Solic. Cancelamento"});
+  const kickoffs =D.filter(function(x){return x.status==="Kick-off"});
+  const emRisco  =D.filter(function(x){return ST_R.includes(x.status)&&x.r});
+  const limitados=D.filter(function(x){return x.escopo==="Limitado"&&ST_AT.includes(x.status)});
+  const conc     =D.filter(function(x){return x.status==="Concluído"&&x.mc});
+  const churns   =D.filter(function(x){return x.status==="Churn"});
 
-  const ativos   =D.filter(p=>ST_AT.includes(p.status));
-  const pausados =D.filter(p=>p.status==="Pausado");
-  const cancels  =D.filter(p=>p.status==="Solic. Cancelamento");
-  const kickoffs =D.filter(p=>p.status==="Kick-off");
-  const emRisco  =D.filter(p=>ST_RISCO.includes(p.status)&&p.r);
-  const limitados=D.filter(p=>p.escopo==="Limitado"&&ST_AT.includes(p.status));
-  const concluidos=D.filter(p=>p.status==="Concluído"&&p.mc);
-  const churns   =D.filter(p=>p.status==="Churn");
+  const tabs_extra = cfg.hasEscopo
+    ? `<button class="tab ${tc}" onclick="showTab('${p}','limitado',this)">⬡ Escopo limitado</button>`
+    : "";
+
+  document.getElementById("sec-"+p).innerHTML=`
+    <div class="kpi-grid" id="${p}-kpis"></div>
+    <div>
+      <div class="tabs">
+        <button class="tab active ${tc}" onclick="showTab('${p}','todos',this)">Todos</button>
+        <button class="tab ${tc}" onclick="showTab('${p}','risco',this)">Em risco</button>
+        <button class="tab ${tc}" onclick="showTab('${p}','pausado',this)">Pausados</button>
+        <button class="tab ${tc}" onclick="showTab('${p}','cancel',this)">Solic. Cancelamento</button>
+        ${tabs_extra}
+        <button class="tab ${tc}" onclick="showTab('${p}','concluido',this)">Concluídos por mês</button>
+        <button class="tab ${tc}" onclick="showTab('${p}','churn',this)">Churn</button>
+        <button class="tab ${tc}" onclick="showTab('${p}','gp',this)">Por gerente</button>
+      </div>
+      <div style="padding:16px 0">
+        <div id="${p}-todos"    class="tc active"></div>
+        <div id="${p}-risco"    class="tc"></div>
+        <div id="${p}-pausado"  class="tc"></div>
+        <div id="${p}-cancel"   class="tc"></div>
+        ${cfg.hasEscopo?`<div id="${p}-limitado" class="tc"></div>`:""}
+        <div id="${p}-concluido"class="tc"></div>
+        <div id="${p}-churn"    class="tc"></div>
+        <div id="${p}-gp"       class="tc"></div>
+      </div>
+    </div>`;
 
   // KPIs
-  document.getElementById("kpis-"+prod).innerHTML=`
-    <div class="kpi"><div class="kpi-label">Em andamento</div><div class="kpi-value" style="color:${cor}">${D.filter(p=>p.status==="Em andamento").length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"}</div></div>
-    <div class="kpi"><div class="kpi-label">Pausado</div><div class="kpi-value c-yellow">${pausados.length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"}</div></div>
-    <div class="kpi"><div class="kpi-label">Solic. Cancelamento</div><div class="kpi-value c-red">${cancels.length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"}</div></div>
-    <div class="kpi"><div class="kpi-label">Kick-off</div><div class="kpi-value c-dark">${kickoffs.length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"}</div></div>
-    <div class="kpi"><div class="kpi-label">Em risco</div><div class="kpi-value c-red">${emRisco.length}</div><div class="kpi-sub">col ${isFluxo?"O":"Q"} = Sim</div></div>
-    ${!isFluxo?`<div class="kpi"><div class="kpi-label">Escopo limitado</div><div class="kpi-value c-purple">${limitados.length}</div><div class="kpi-sub">col V = Limitado</div></div>`:""}
-    <div class="kpi"><div class="kpi-label">Churn</div><div class="kpi-value c-red">${churns.length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"} = Churn</div></div>
-    <div class="kpi"><div class="kpi-label">Concluídos</div><div class="kpi-value c-green">${D.filter(p=>p.status==="Concluído").length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"} = Concluído</div></div>`;
+  document.getElementById(p+"-kpis").innerHTML=`
+    <div class="kpi"><div class="kpi-lbl">Em andamento</div><div class="kpi-val" style="color:${cor}">${D.filter(function(x){return x.status==="Em andamento"}).length}</div><div class="kpi-sub">col ${cfg.colStatus}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Pausado</div><div class="kpi-val c-yel">${pausados.length}</div><div class="kpi-sub">col ${cfg.colStatus}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Solic. Cancelamento</div><div class="kpi-val c-red">${cancels.length}</div><div class="kpi-sub">col ${cfg.colStatus}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Kick-off</div><div class="kpi-val c-drk">${kickoffs.length}</div><div class="kpi-sub">col ${cfg.colStatus}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Em risco</div><div class="kpi-val c-red">${emRisco.length}</div><div class="kpi-sub">col ${cfg.colRisco} = Sim</div></div>
+    ${cfg.hasEscopo?`<div class="kpi"><div class="kpi-lbl">Escopo limitado</div><div class="kpi-val c-pur">${limitados.length}</div><div class="kpi-sub">col V = Limitado</div></div>`:""}
+    <div class="kpi"><div class="kpi-lbl">Churn</div><div class="kpi-val c-red">${churns.length}</div><div class="kpi-sub">col ${cfg.colStatus} = Churn</div></div>
+    <div class="kpi"><div class="kpi-lbl">Concluídos</div><div class="kpi-val c-grn">${D.filter(function(x){return x.status==="Concluído"}).length}</div><div class="kpi-sub">col ${cfg.colStatus} = Concluído</div></div>`;
 
   // Todos
-  const filtros=isFluxo?filtrosFluxo:filtrosPlano;
-  document.getElementById(prod+"-tab-todos").innerHTML=`
-    <div class="filter-bar"><span>Filtrar:</span>
-      ${ST_AT.map(s=>`<button class="fbtn ${filtros.has(s)?"on":""} ${fbtnClass}" onclick="toggleF('${prod}',this,'${s}')">${s}</button>`).join("")}
-    </div>
-    <div class="table-wrap"><table>
-      <thead><tr>
-        <th style="width:28%">Cliente</th><th style="width:8%">Aging</th>
-        <th style="width:14%">Status</th><th style="width:13%">Em risco</th>
-        ${!isFluxo?`<th style="width:10%">Escopo</th>`:""}
-        <th style="width:14%">Prev. encerr.</th><th style="width:13%">Gerente</th>
-      </tr></thead>
-      <tbody id="${prod}-tbody-todos"></tbody>
-    </table></div>`;
-  filtrarTodos(prod,D);
+  renderTodos(p,D,cfg);
 
   // Em risco
-  const sim=emRisco.filter(p=>p.risco==="Sim").length;
-  const med=emRisco.filter(p=>p.risco==="Sim - Médio").length;
-  document.getElementById(prod+"-tab-risco").innerHTML=`
+  const sim=emRisco.filter(function(x){return x.risco==="Sim"}).length;
+  const med=emRisco.filter(function(x){return x.risco==="Sim - Médio"}).length;
+  document.getElementById(p+"-risco").innerHTML=`
     <div class="sum3">
       <div class="sbox"><div class="sbox-val c-red">${sim}</div><div class="sbox-lbl">Sim</div></div>
-      <div class="sbox"><div class="sbox-val c-yellow">${med}</div><div class="sbox-lbl">Sim - Médio</div></div>
+      <div class="sbox"><div class="sbox-val c-yel">${med}</div><div class="sbox-lbl">Sim - Médio</div></div>
       <div class="sbox"><div class="sbox-val c-red">${emRisco.length}</div><div class="sbox-lbl">Total em risco</div></div>
     </div>
-    ${emRisco.sort((a,b)=>(b.aging||0)-(a.aging||0)).map(p=>`
-    <div class="card"><div class="card-title">${p.nome} ${qb(p.risco)}</div>
-    <div class="card-desc">${p.motivo||"Ver planilha."}</div>
-    <div class="card-meta">${ab(p.aging)}${sb(p.status)}<span class="badge b-gray">${p.gerente}</span>${p.prevFmt!=="—"?`<span class="badge b-gray">Prev: ${p.prevFmt}</span>`:""}</div></div>`).join("")}`;
+    ${emRisco.sort(function(a,b){return(b.aging||0)-(a.aging||0)}).map(function(x){return`
+    <div class="card"><div class="card-title">${x.nome} ${qb(x.risco)}</div>
+    <div class="card-desc">${x.motivo||"Ver planilha."}</div>
+    <div class="card-meta">${ab(x.aging)}${sb(x.status)}<span class="badge b-gray">${x.gerente}</span>${x.pf!=="—"?`<span class="badge b-gray">Prev: ${x.pf}</span>`:""}</div></div>`}).join("")}`;
 
   // Pausados
-  renderListCards(prod,"pausado",pausados,"b-yellow","var(--warning)");
-
+  renderCards(p,"pausado",pausados,"var(--warning)");
   // Cancelamentos
-  document.getElementById(prod+"-tab-cancel").innerHTML=cancels.length===0
-    ?`<div style="text-align:center;padding:30px;color:var(--txt2)">Nenhum projeto</div>`
-    :cancels.sort((a,b)=>(b.aging||0)-(a.aging||0)).map(p=>`
-    <div class="card"><div class="card-title">${p.nome}</div>
-    <div class="card-desc">${p.motivo||"—"}</div>
-    <div class="card-meta">${ab(p.aging)}${sb(p.status)}<span class="badge b-gray">${p.gerente}</span></div></div>`).join("");
+  renderCards(p,"cancel",cancels,"var(--danger)");
+  // Churn
+  renderCards(p,"churn",churns,"var(--danger)");
 
-  // Escopo limitado (só Plano)
-  if(!isFluxo){
-    const gpL=agrupar(limitados,"gerente");
-    const maxL=Math.max(...Object.values(gpL),1);
-    document.getElementById("plano-tab-limitado").innerHTML=`
+  // Escopo limitado
+  if(cfg.hasEscopo){
+    const gpL=ag(limitados,"gerente"),maxL=Math.max(...Object.values(gpL),1);
+    document.getElementById(p+"-limitado").innerHTML=`
       <div class="sum3">
-        <div class="sbox"><div class="sbox-val c-purple">${limitados.length}</div><div class="sbox-lbl">Total</div></div>
-        <div class="sbox"><div class="sbox-val c-blue">${limitados.filter(p=>p.status==="Em andamento").length}</div><div class="sbox-lbl">Em andamento</div></div>
-        <div class="sbox"><div class="sbox-val c-red">${limitados.filter(p=>["Pausado","Solic. Cancelamento"].includes(p.status)).length}</div><div class="sbox-lbl">Pausado/Solic.</div></div>
+        <div class="sbox"><div class="sbox-val c-pur">${limitados.length}</div><div class="sbox-lbl">Total</div></div>
+        <div class="sbox"><div class="sbox-val c-blue">${limitados.filter(function(x){return x.status==="Em andamento"}).length}</div><div class="sbox-lbl">Em andamento</div></div>
+        <div class="sbox"><div class="sbox-val c-red">${limitados.filter(function(x){return["Pausado","Solic. Cancelamento"].includes(x.status)}).length}</div><div class="sbox-lbl">Pausado/Solic.</div></div>
       </div>
-      <div class="bar-section"><div class="bar-title">Por gerente</div>
-        ${Object.entries(gpL).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`
-        <div class="bar-row"><span class="bar-lbl">${g}</span>
-          <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxL*100)}%;background:var(--purple)"></div></div>
-          <span class="bar-num">${n}</span></div>`).join("")}
+      <div class="bar-sec"><div class="bar-title">Por gerente</div>
+        ${Object.entries(gpL).sort(function(a,b){return b[1]-a[1]}).map(function(e){return`
+        <div class="bar-row"><span class="bar-lbl">${e[0]}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.round(e[1]/maxL*100)}%;background:var(--purple)"></div></div>
+          <span class="bar-num">${e[1]}</span></div>`}).join("")}
       </div>
-      <div class="table-wrap"><table>
+      <div class="tw"><table>
         <thead><tr><th style="width:4%">#</th><th style="width:30%">Projeto</th><th style="width:12%">GP</th><th style="width:14%">Status</th><th style="width:14%">Em risco</th><th style="width:13%">Prev.</th><th style="width:13%">Aging</th></tr></thead>
-        <tbody>${limitados.sort((a,b)=>(b.aging||0)-(a.aging||0)).map((p,i)=>`<tr>
+        <tbody>${limitados.sort(function(a,b){return(b.aging||0)-(a.aging||0)}).map(function(x,i){return`<tr>
           <td style="color:var(--txt3);font-size:11px">${i+1}</td>
-          <td style="font-weight:600;color:var(--accent)">${p.nome}</td>
-          <td>${p.gerente}</td><td>${sb(p.status)}</td><td>${qb(p.risco)}</td><td>${p.prevFmt}</td><td>${ab(p.aging)}</td>
-        </tr>`).join("")}</tbody>
+          <td style="font-weight:600;color:var(--accent)">${x.nome}</td>
+          <td>${x.gerente}</td><td>${sb(x.status)}</td><td>${qb(x.risco)}</td><td>${x.pf}</td><td>${ab(x.aging)}</td>
+        </tr>`}).join("")}</tbody>
       </table></div>`;
   }
 
   // Concluídos por mês
-  const porMes={};
-  concluidos.forEach(c=>{if(!porMes[c.mc])porMes[c.mc]=[];porMes[c.mc].push(c)});
-  const mOrd=MESES_ORD.filter(m=>porMes[m]);
-  const maxM=Math.max(...mOrd.map(m=>porMes[m].length),1);
-  document.getElementById(prod+"-tab-concluido").innerHTML=`
+  const pm={};
+  conc.forEach(function(c){if(!pm[c.mc])pm[c.mc]=[];pm[c.mc].push(c)});
+  const mOrd=MORD.filter(function(m){return pm[m]});
+  const maxM=Math.max(...mOrd.map(function(m){return pm[m].length}),1);
+  document.getElementById(p+"-concluido").innerHTML=`
     <div class="sum3">
-      <div class="sbox"><div class="sbox-val c-green">${D.filter(p=>p.status==="Concluído").length}</div><div class="sbox-lbl">Total</div></div>
+      <div class="sbox"><div class="sbox-val c-grn">${D.filter(function(x){return x.status==="Concluído"}).length}</div><div class="sbox-lbl">Total</div></div>
       <div class="sbox"><div class="sbox-val" style="color:${cor}">${mOrd.length}</div><div class="sbox-lbl">Meses c/ entrega</div></div>
-      <div class="sbox"><div class="sbox-val c-green">${maxM}</div><div class="sbox-lbl">Pico mensal</div></div>
+      <div class="sbox"><div class="sbox-val c-grn">${maxM}</div><div class="sbox-lbl">Pico mensal</div></div>
     </div>
-    <div class="bar-section"><div class="bar-title">Entregas por mês</div>
-      ${mOrd.map(m=>`<div class="bar-row"><span class="bar-lbl">${m}</span>
-        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(porMes[m].length/maxM*100)}%;background:var(--success)"></div></div>
-        <span class="bar-num">${porMes[m].length}</span></div>`).join("")}
+    <div class="bar-sec"><div class="bar-title">Entregas por mês</div>
+      ${mOrd.map(function(m){return`<div class="bar-row"><span class="bar-lbl">${m}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(pm[m].length/maxM*100)}%;background:var(--success)"></div></div>
+        <span class="bar-num">${pm[m].length}</span></div>`}).join("")}
     </div>
-    ${mOrd.map((m,i)=>`
-    <div class="acc-hdr" onclick="toggleAcc(this,'${prod}acc${i}')">
-      <div class="acc-left"><span class="acc-title">${m}</span><span class="acc-count">${porMes[m].length} entrega${porMes[m].length>1?"s":""}</span>${porMes[m].length===maxM?`<span class="badge b-green">Pico</span>`:""}</div>
+    ${mOrd.map(function(m,i){return`
+    <div class="acc-hdr" onclick="toggleAcc(this,'${p}ac${i}')">
+      <div class="acc-left"><span class="acc-title">${m}</span><span class="acc-count">${pm[m].length} entrega${pm[m].length>1?"s":""}</span>${pm[m].length===maxM?`<span class="badge b-grn">Pico</span>`:""}</div>
       <span class="acc-chev">▾</span>
     </div>
-    <div class="acc-body" id="${prod}acc${i}">
-      ${porMes[m].map(c=>`<div class="acc-row"><span>${c.nome}</span><div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:var(--txt2)">${c.gerente}</span><span class="badge b-green">Concluído</span></div></div>`).join("")}
-    </div>`).join("")}`;
-
-  // Churn
-  renderListCards(prod,"churn",churns,"b-red","var(--danger)");
+    <div class="acc-body" id="${p}ac${i}">
+      ${pm[m].map(function(c){return`<div class="acc-row"><span>${c.nome}</span><div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:var(--txt2)">${c.gerente}</span><span class="badge b-grn">Concluído</span></div></div>`}).join("")}
+    </div>`}).join("")}`;
 
   // Por gerente
-  const gpT={},gpR={},gpPau={};
-  ativos.forEach(p=>{gpT[p.gerente]=(gpT[p.gerente]||0)+1;if(p.r&&ST_RISCO.includes(p.status))gpR[p.gerente]=(gpR[p.gerente]||0)+1;if(p.status==="Pausado")gpPau[p.gerente]=(gpPau[p.gerente]||0)+1});
+  const gpT={},gpR={},gpP={};
+  ativos.forEach(function(x){
+    gpT[x.gerente]=(gpT[x.gerente]||0)+1;
+    if(x.r&&ST_R.includes(x.status))gpR[x.gerente]=(gpR[x.gerente]||0)+1;
+    if(x.status==="Pausado")gpP[x.gerente]=(gpP[x.gerente]||0)+1;
+  });
   const maxGP=Math.max(...Object.values(gpT),1);
-  document.getElementById(prod+"-tab-gp").innerHTML=`
-    <div class="bar-section"><div class="bar-title">Projetos ativos por gerente</div>
-      ${Object.entries(gpT).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`
-      <div class="bar-row"><span class="bar-lbl">${g}</span>
-        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxGP*100)}%;background:${cor}"></div></div>
-        <span class="bar-num">${n}</span>
-        <div class="bar-badges">
-          <span class="badge b-red" style="font-size:9px">${gpR[g]||0} risco</span>
-          <span class="badge b-yellow" style="font-size:9px">${gpPau[g]||0} pausado</span>
+  document.getElementById(p+"-gp").innerHTML=`
+    <div class="bar-sec"><div class="bar-title">Projetos ativos por gerente</div>
+      ${Object.entries(gpT).sort(function(a,b){return b[1]-a[1]}).map(function(e){return`
+      <div class="bar-row"><span class="bar-lbl">${e[0]}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(e[1]/maxGP*100)}%;background:${cor}"></div></div>
+        <span class="bar-num">${e[1]}</span>
+        <div class="bar-bdgs">
+          <span class="badge b-red" style="font-size:9px">${gpR[e[0]]||0} risco</span>
+          <span class="badge b-yel" style="font-size:9px">${gpP[e[0]]||0} pausado</span>
         </div>
-      </div>`).join("")}
+      </div>`}).join("")}
     </div>`;
 }
 
-function renderListCards(prod,tipo,lista,badgeClass,barColor){
-  const gpX=agrupar(lista,"gerente");
-  const maxX=Math.max(...Object.values(gpX),1);
-  document.getElementById(prod+"-tab-"+tipo).innerHTML=`
-    <div class="sum3">
-      <div class="sbox"><div class="sbox-val" style="color:${barColor}">${lista.length}</div><div class="sbox-lbl">Total</div></div>
-      <div class="sbox"><div class="sbox-val c-red">${lista.filter(p=>p.r).length}</div><div class="sbox-lbl">Em risco</div></div>
-      <div class="sbox"><div class="sbox-val c-dark">${lista.length?Math.round(lista.reduce((s,p)=>s+(p.aging||0),0)/lista.length):0}d</div><div class="sbox-lbl">Aging médio</div></div>
+function renderTodos(p,D,cfg){
+  const f=filtros[p];
+  document.getElementById(p+"-todos").innerHTML=`
+    <div class="fbar"><span>Filtrar:</span>
+      ${ST_AT.map(function(s){return`<button class="fbtn ${f.has(s)?"on":""} ${cfg.fbtnClass}" onclick="toggleF('${p}',this,'${s}')">${s}</button>`}).join("")}
     </div>
-    <div class="bar-section"><div class="bar-title">Por gerente</div>
-      ${Object.entries(gpX).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`
-      <div class="bar-row"><span class="bar-lbl">${g}</span>
-        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxX*100)}%;background:${barColor}"></div></div>
-        <span class="bar-num">${n}</span></div>`).join("")}
-    </div>
-    ${lista.sort((a,b)=>(b.aging||0)-(a.aging||0)).map(p=>`
-    <div class="card"><div class="card-title">${p.nome}</div>
-    <div class="card-desc">${p.motivo||"—"}</div>
-    <div class="card-meta">${ab(p.aging)}${p.r?qb(p.risco):""}${sb(p.status)}<span class="badge b-gray">${p.gerente}</span></div></div>`).join("")}`;
+    <div class="tw"><table>
+      <thead><tr>
+        <th style="width:28%">Cliente</th><th style="width:8%">Aging</th>
+        <th style="width:14%">Status</th><th style="width:13%">Em risco</th>
+        ${cfg.hasEscopo?`<th style="width:10%">Escopo</th>`:""}
+        <th style="width:14%">Prev. encerr.</th><th style="width:13%">Gerente</th>
+      </tr></thead>
+      <tbody id="${p}-tbody"></tbody>
+    </table></div>`;
+  filtrarTodos(p,D,cfg);
 }
 
-function filtrarTodos(prod,D){
-  if(!D)D=prod==="fluxo"?FLUXO:PLANO;
-  const filtros=prod==="fluxo"?filtrosFluxo:filtrosPlano;
-  const isFluxo=prod==="fluxo";
-  const f=D.filter(p=>ST_AT.includes(p.status)&&filtros.has(p.status)).sort((a,b)=>(b.aging||0)-(a.aging||0));
-  const tb=document.getElementById(prod+"-tbody-todos");
-  if(tb)tb.innerHTML=f.map(p=>`<tr>
-    <td title="${p.nome}">${p.nome}</td><td>${ab(p.aging)}</td><td>${sb(p.status)}</td>
-    <td>${qb(p.risco)}</td>${!isFluxo?`<td>${ub(p.escopo)}</td>`:""}
-    <td>${p.prevFmt}</td><td>${p.gerente}</td>
-  </tr>`).join("");
+function filtrarTodos(p,D,cfg){
+  if(!D)D=DATA[p];
+  if(!cfg)cfg=PRODS[p];
+  const f=filtros[p];
+  const rows=D.filter(function(x){return ST_AT.includes(x.status)&&f.has(x.status)}).sort(function(a,b){return(b.aging||0)-(a.aging||0)});
+  const tb=document.getElementById(p+"-tbody");
+  if(tb)tb.innerHTML=rows.map(function(x){return`<tr>
+    <td title="${x.nome}">${x.nome}</td><td>${ab(x.aging)}</td><td>${sb(x.status)}</td>
+    <td>${qb(x.risco)}</td>${cfg.hasEscopo?`<td>${ub(x.escopo)}</td>`:""}
+    <td>${x.pf}</td><td>${x.gerente}</td>
+  </tr>`}).join("");
 }
 
-function toggleF(prod,el,v){
-  const filtros=prod==="fluxo"?filtrosFluxo:filtrosPlano;
-  filtros.has(v)?filtros.delete(v):filtros.add(v);
+function renderCards(p,tipo,lista,corBar){
+  const gpX=ag(lista,"gerente"),maxX=Math.max(...Object.values(gpX),1);
+  document.getElementById(p+"-"+tipo).innerHTML=lista.length===0
+    ?`<div style="text-align:center;padding:30px;color:var(--txt2)">Nenhum projeto</div>`
+    :`<div class="sum3">
+      <div class="sbox"><div class="sbox-val" style="color:${corBar}">${lista.length}</div><div class="sbox-lbl">Total</div></div>
+      <div class="sbox"><div class="sbox-val c-red">${lista.filter(function(x){return x.r}).length}</div><div class="sbox-lbl">Em risco</div></div>
+      <div class="sbox"><div class="sbox-val c-drk">${lista.length?Math.round(lista.reduce(function(s,x){return s+(x.aging||0)},0)/lista.length):0}d</div><div class="sbox-lbl">Aging médio</div></div>
+    </div>
+    <div class="bar-sec"><div class="bar-title">Por gerente</div>
+      ${Object.entries(gpX).sort(function(a,b){return b[1]-a[1]}).map(function(e){return`
+      <div class="bar-row"><span class="bar-lbl">${e[0]}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(e[1]/maxX*100)}%;background:${corBar}"></div></div>
+        <span class="bar-num">${e[1]}</span></div>`}).join("")}
+    </div>
+    ${lista.sort(function(a,b){return(b.aging||0)-(a.aging||0)}).map(function(x){return`
+    <div class="card"><div class="card-title">${x.nome}</div>
+    <div class="card-desc">${x.motivo||"—"}</div>
+    <div class="card-meta">${ab(x.aging)}${x.r?qb(x.risco):""}${sb(x.status)}<span class="badge b-gray">${x.gerente}</span></div></div>`}).join("")}`;
+}
+
+function toggleF(p,el,v){
+  filtros[p].has(v)?filtros[p].delete(v):filtros[p].add(v);
   el.classList.toggle("on");
-  filtrarTodos(prod);
+  filtrarTodos(p);
 }
-
 function toggleAcc(hdr,id){
-  const b=document.getElementById(id);
-  const c=hdr.querySelector(".acc-chev");
-  b.classList.toggle("open");
-  c.classList.toggle("open");
+  const b=document.getElementById(id),c=hdr.querySelector(".acc-chev");
+  b.classList.toggle("open");c.classList.toggle("open");
 }
 
 carregar();
