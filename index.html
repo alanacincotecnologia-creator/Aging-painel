@@ -242,17 +242,18 @@ tr:hover td{background:var(--bg)}
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwvaB6ixhU9b71Mul58TWyvVVg_M2u-pRvxZkiOUZTWaguKAhS_mZWLxb3bWLydUmWV/exec";
 
-const ST_AT    = ["Em andamento","Pausado","Solic. Cancelamento","Kick-off"];
-const ST_RISCO = ["Em andamento","Pausado","Solic. Cancelamento"];
-const MESES    = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
-const MESES_ORD= ["Jan/2026","Fev/2026","Mar/2026","Abr/2026","Mai/2026","Jun/2026","Jul/2026","Ago/2026","Set/2026","Out/2026","Nov/2026"];
+const ST_AT     = ["Em andamento","Alinhamento","Pausado","Solic. Cancelamento","Kick-off"];
+const ST_AT_FPA = ["Em andamento","Alinhamento","Kick-off","Pausado","Solic. Cancelamento"];
+const ST_RISCO  = ["Em andamento","Alinhamento","Pausado","Solic. Cancelamento"];
+const MESES     = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+const MESES_ORD = ["Jan/2026","Fev/2026","Mar/2026","Abr/2026","Mai/2026","Jun/2026","Jul/2026","Ago/2026","Set/2026","Out/2026","Nov/2026"];
 
 function isRisco(q){return q==="Sim"||q==="Sim - Médio"}
 function fmtD(s){if(!s)return"—";const d=new Date(s);if(isNaN(d))return s;return MESES[d.getMonth()]+"/"+String(d.getFullYear()).slice(2)}
 function mesConc(s){if(!s)return null;const d=new Date(s);if(isNaN(d))return null;return MESES[d.getMonth()]+"/"+d.getFullYear()}
 
 let filtrosPlano=new Set(ST_AT);
-let filtrosFPA=new Set(ST_AT);
+let filtrosFPA=new Set(ST_AT_FPA);
 let filtrosFluxo=new Set(ST_AT);
 let PLANO=[], FPA=[], FLUXO=[];
 
@@ -303,7 +304,7 @@ function showTab(prod,id,el){
 
 // ── Helpers visuais ──────────────────────────────────────────
 function ab(n){n=parseInt(n)||0;if(n>=300)return`<span class="badge b-red">${n}d</span>`;if(n>=150)return`<span class="badge b-yellow">${n}d</span>`;if(n>=60)return`<span class="badge b-green">${n}d</span>`;return`<span class="badge b-gray">${n>0?n+"d":"—"}</span>`}
-function sb(v){const m={"Em andamento":"b-blue","Pausado":"b-yellow","Solic. Cancelamento":"b-red","Kick-off":"b-green","Concluído":"b-green","Churn":"b-red"};return`<span class="badge ${m[v]||"b-gray"}">${v}</span>`}
+function sb(v){const m={"Em andamento":"b-blue","Pausado":"b-yellow","Solic. Cancelamento":"b-red","Kick-off":"b-green","Concluído":"b-green","Churn":"b-red","Alinhamento":"b-teal"};return`<span class="badge ${m[v]||"b-gray"}">${v}</span>`}
 function qb(q){if(q==="Sim")return`<span class="badge b-red">Sim</span>`;if(q==="Sim - Médio")return`<span class="badge b-yellow">Sim - Médio</span>`;return`<span class="badge b-gray">—</span>`}
 function ub(u){return u==="Limitado"?`<span class="badge b-purple">Limitado</span>`:`<span class="badge b-gray">Antigo</span>`}
 function agrupar(arr,c){return arr.reduce((a,p)=>{a[p[c]]=(a[p[c]]||0)+1;return a},{})}
@@ -315,32 +316,35 @@ function renderProduto(prod,D){
   const cor=isFluxo?"var(--orange)":isFPA?"var(--teal)":"var(--accent)";
   const corClass=isFluxo?"b-orange":isFPA?"b-teal":"b-blue";
   const fbtnClass=isFluxo?"fluxo":isFPA?"fpa":"";
+  const ST_ATIVO=isFPA?ST_AT_FPA:ST_AT;
 
-  const ativos   =D.filter(p=>ST_AT.includes(p.status));
+  const ativos   =D.filter(p=>ST_ATIVO.includes(p.status));
   const pausados =D.filter(p=>p.status==="Pausado");
   const cancels  =D.filter(p=>p.status==="Solic. Cancelamento");
   const kickoffs =D.filter(p=>p.status==="Kick-off");
+  const alinhamentos=D.filter(p=>p.status==="Alinhamento");
   const emRisco  =D.filter(p=>ST_RISCO.includes(p.status)&&p.r);
-  const limitados=D.filter(p=>p.escopo==="Limitado"&&ST_AT.includes(p.status));
+  const limitados=D.filter(p=>p.escopo==="Limitado"&&ST_ATIVO.includes(p.status));
   const concluidos=D.filter(p=>p.status==="Concluído"&&p.mc);
   const churns   =D.filter(p=>p.status==="Churn");
 
   // KPIs
   document.getElementById("kpis-"+prod).innerHTML=`
-    <div class="kpi"><div class="kpi-label">Em andamento</div><div class="kpi-value" style="color:${cor}">${D.filter(p=>p.status==="Em andamento").length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"}</div></div>
-    <div class="kpi"><div class="kpi-label">Pausado</div><div class="kpi-value c-yellow">${pausados.length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"}</div></div>
-    <div class="kpi"><div class="kpi-label">Solic. Cancelamento</div><div class="kpi-value c-red">${cancels.length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"}</div></div>
-    <div class="kpi"><div class="kpi-label">Kick-off</div><div class="kpi-value c-dark">${kickoffs.length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"}</div></div>
+    <div class="kpi"><div class="kpi-label">Em andamento</div><div class="kpi-value" style="color:${cor}">${D.filter(p=>p.status==="Em andamento").length}</div><div class="kpi-sub">col W</div></div>
+    ${isFPA?`<div class="kpi"><div class="kpi-label">Alinhamento</div><div class="kpi-value" style="color:var(--teal)">${alinhamentos.length}</div><div class="kpi-sub">col W</div></div>`:""}
+    <div class="kpi"><div class="kpi-label">Pausado</div><div class="kpi-value c-yellow">${pausados.length}</div><div class="kpi-sub">col W</div></div>
+    <div class="kpi"><div class="kpi-label">Solic. Cancelamento</div><div class="kpi-value c-red">${cancels.length}</div><div class="kpi-sub">col W</div></div>
+    <div class="kpi"><div class="kpi-label">Kick-off</div><div class="kpi-value c-dark">${kickoffs.length}</div><div class="kpi-sub">col W</div></div>
     <div class="kpi"><div class="kpi-label">Em risco</div><div class="kpi-value c-red">${emRisco.length}</div><div class="kpi-sub">col ${isFluxo?"O":"Q"} = Sim</div></div>
     ${!isFluxo?`<div class="kpi"><div class="kpi-label">Escopo limitado</div><div class="kpi-value c-purple">${limitados.length}</div><div class="kpi-sub">col V = Limitado</div></div>`:""}
-    <div class="kpi"><div class="kpi-label">Churn</div><div class="kpi-value c-red">${churns.length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"} = Churn</div></div>
-    <div class="kpi"><div class="kpi-label">Concluídos</div><div class="kpi-value c-green">${D.filter(p=>p.status==="Concluído").length}</div><div class="kpi-sub">col ${isFluxo?"Q":"W"} = Concluído</div></div>`;
+    <div class="kpi"><div class="kpi-label">Churn</div><div class="kpi-value c-red">${churns.length}</div><div class="kpi-sub">col W = Churn</div></div>
+    <div class="kpi"><div class="kpi-label">Concluídos</div><div class="kpi-value c-green">${D.filter(p=>p.status==="Concluído").length}</div><div class="kpi-sub">col W = Concluído</div></div>`;
 
   // Todos
   const filtros=isFluxo?filtrosFluxo:isFPA?filtrosFPA:filtrosPlano;
   document.getElementById(prod+"-tab-todos").innerHTML=`
     <div class="filter-bar"><span>Filtrar:</span>
-      ${ST_AT.map(s=>`<button class="fbtn ${filtros.has(s)?"on":""} ${fbtnClass}" onclick="toggleF('${prod}',this,'${s}')">${s}</button>`).join("")}
+      ${ST_ATIVO.map(s=>`<button class="fbtn ${filtros.has(s)?"on":""} ${fbtnClass}" onclick="toggleF('${prod}',this,'${s}')">${s}</button>`).join("")}
     </div>
     <div class="table-wrap"><table>
       <thead><tr>
@@ -486,7 +490,9 @@ function filtrarTodos(prod,D){
   if(!D) D=getData(prod);
   const filtros=getFiltros(prod);
   const isFluxo=prod==="fluxo";
-  const f=D.filter(p=>ST_AT.includes(p.status)&&filtros.has(p.status)).sort((a,b)=>(b.aging||0)-(a.aging||0));
+  const isFPA=prod==="fpa";
+  const ST_ATIVO=isFPA?ST_AT_FPA:ST_AT;
+  const f=D.filter(p=>ST_ATIVO.includes(p.status)&&filtros.has(p.status)).sort((a,b)=>(b.aging||0)-(a.aging||0));
   const tb=document.getElementById(prod+"-tbody-todos");
   if(tb)tb.innerHTML=f.map(p=>`<tr>
     <td title="${p.nome}">${p.nome}</td><td>${ab(p.aging)}</td><td>${sb(p.status)}</td>
