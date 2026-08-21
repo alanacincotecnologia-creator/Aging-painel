@@ -68,6 +68,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
 thead tr{background:var(--bg)}
 th{padding:9px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--txt);background:var(--surface2)}
 td{padding:9px 12px;color:var(--txt);border-bottom:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--bg)}
@@ -348,13 +350,13 @@ function renderProduto(prod,D){
     </div>
     <div class="table-wrap"><table>
       <thead><tr>
-        <th style="width:28%;cursor:pointer;user-select:none" onclick="sortTabela('${prod}','nome')">Cliente <span id="${prod}-sort-nome">↕</span></th>
-        <th style="width:8%;cursor:pointer;user-select:none" onclick="sortTabela('${prod}','aging')">Aging <span id="${prod}-sort-aging">↓</span></th>
-        <th style="width:14%;cursor:pointer;user-select:none" onclick="sortTabela('${prod}','status')">Status <span id="${prod}-sort-status">↕</span></th>
-        <th style="width:13%;cursor:pointer;user-select:none" onclick="sortTabela('${prod}','risco')">Em risco <span id="${prod}-sort-risco">↕</span></th>
-        ${!isFluxo?`<th style="width:10%;cursor:pointer;user-select:none" onclick="sortTabela('${prod}','escopo')">Escopo <span id="${prod}-sort-escopo">↕</span></th>`:""}
-        <th style="width:14%;cursor:pointer;user-select:none" onclick="sortTabela('${prod}','prevFmt')">Prev. encerr. <span id="${prod}-sort-prevFmt">↕</span></th>
-        <th style="width:13%;cursor:pointer;user-select:none" onclick="sortTabela('${prod}','gerente')">Gerente <span id="${prod}-sort-gerente">↕</span></th>
+        <th class="sortable" style="width:28%" onclick="sortTabela('${prod}','nome')">Cliente <span id="${prod}-sort-nome">↕</span></th>
+        <th class="sortable" style="width:8%"  onclick="sortTabela('${prod}','aging')">Aging <span id="${prod}-sort-aging">↓</span></th>
+        <th class="sortable" style="width:14%" onclick="sortTabela('${prod}','status')">Status <span id="${prod}-sort-status">↕</span></th>
+        <th class="sortable" style="width:13%" onclick="sortTabela('${prod}','risco')">Em risco <span id="${prod}-sort-risco">↕</span></th>
+        ${!isFluxo?`<th class="sortable" style="width:10%" onclick="sortTabela('${prod}','escopo')">Escopo <span id="${prod}-sort-escopo">↕</span></th>`:""}
+        <th class="sortable" style="width:14%" onclick="sortTabela('${prod}','prevFmt')">Prev. encerr. <span id="${prod}-sort-prevFmt">↕</span></th>
+        <th class="sortable" style="width:13%" onclick="sortTabela('${prod}','gerente')">Gerente <span id="${prod}-sort-gerente">↕</span></th>
       </tr></thead>
       <tbody id="${prod}-tbody-todos"></tbody>
     </table></div>`;
