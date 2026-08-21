@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aging — Report Diretoria | Prophix</title>
+<title>Aging — Report Diretoria | Prophix v5</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -271,7 +271,7 @@ async function carregar(){
     FLUXO.forEach(p=>{p.r=isRisco(p.risco);p.prevFmt=fmtD(p.prevConc);p.mc=mesConc(p.entregaF2)});
 
     renderProduto("plano",PLANO);
-    renderProduto("fpa",FPA,"fpa");
+    renderProduto("fpa",FPA);
     renderProduto("fluxo",FLUXO);
 
     const ts=new Date(json.ts);
