@@ -381,7 +381,7 @@ function renderPlano(D){
   mkChart("ch-plano-prev","bar",mesesPrev.map(m=>m.replace("/2026","/26")),[{label:"Previsão",data:prevCounts,backgroundColor:"#2563EB",borderRadius:5}],{extra:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
 
   // Gráfico Entradas x Saídas
-  const mesesIO=getMesesRef(D,["kickoff","entregaF2"]);
+  const mesesIO=getMesesRef(D,["kickoff","entregaF2"]).filter(m=>m.includes("/2026"));
   const entradas=mesesIO.map(m=>D.filter(p=>mesStr(p.kickoff)===m).length);
   const saidas=mesesIO.map(m=>D.filter(p=>mesStr(p.entregaF2)===m).length);
   mkChart("ch-plano-io","bar",mesesIO.map(m=>{const[ms,y]=m.split("/");return ms+"/"+String(y).slice(2)}),[
@@ -497,7 +497,7 @@ function renderFluxo(D){
   const prevCounts=mesesPrev.map(m=>D.filter(p=>mesStr(p.prevConc)===m&&p.status==="Em andamento").length);
   mkChart("ch-fluxo-prev","bar",mesesPrev.map(m=>m.replace("/2026","/26")),[{label:"Previsão",data:prevCounts,backgroundColor:"#EA580C",borderRadius:5}],{extra:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
 
-  const mesesIO=getMesesRef(D,["kickoff","entregaF2"]);
+  const mesesIO=getMesesRef(D,["kickoff","entregaF2"]).filter(m=>m.includes("/2026"));
   const entradas=mesesIO.map(m=>D.filter(p=>mesStr(p.kickoff)===m).length);
   const saidas=mesesIO.map(m=>D.filter(p=>mesStr(p.entregaF2)===m).length);
   mkChart("ch-fluxo-io","bar",mesesIO.map(m=>{const[ms,y]=m.split("/");return ms+"/"+String(y).slice(2)}),[
