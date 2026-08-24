@@ -430,7 +430,7 @@ function renderPlano(D){
       const agingColor=(p.aging||0)>=300?"c-red":(p.aging||0)>=150?"c-yel":"c-grn";
       return`<tr><td style="color:#94A3B8">${i+1}</td><td style="font-weight:600;color:var(--accent)">${p.nome}</td>
       <td>${p.gerente}</td><td>${f1b}</td>
-      <td style="text-align:center">${p.entregaF1?fmtD(p.entregaF1):"—"}</td>
+      <td style="text-align:center">${p.diasF1||"—"}</td>
       <td>${fmtD(p.prevConc)}</td>
       <td class="${agingColor}" style="font-weight:600">${p.aging||"—"}d</td>
       <td><span class="badge b-blue">${p.status}</span></td></tr>`;
