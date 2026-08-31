@@ -396,11 +396,8 @@ function renderPlano(D){
     const d1=new Date(p.kickoff),d2=new Date(p.entregaF1);
     return s+(isNaN(d1)||isNaN(d2)?0:Math.round((d2-d1)/86400000));
   },0)/limF1ok.length):0;
-  const limF2ok=D.filter(p=>p.escopo==="Limitado"&&p.status==="Concluído"&&p.entregaF2&&p.kickoff);
-  const mediaF2=limF2ok.length?Math.round(limF2ok.reduce((s,p)=>{
-    const d1=new Date(p.kickoff),d2=new Date(p.entregaF2);
-    return s+(isNaN(d1)||isNaN(d2)?0:Math.round((d2-d1)/86400000));
-  },0)/limF2ok.length):0;
+  const limF2ok=D.filter(p=>p.escopo==="Limitado"&&p.status==="Concluído"&&p.aging);
+  const mediaF2=limF2ok.length?Math.round(limF2ok.reduce((s,p)=>s+(p.aging||0),0)/limF2ok.length):0;
 
   document.getElementById("esc-sum-plano").innerHTML=`
     <div class="ebox"><div class="ebox-val c-pur">${limitados.length}</div><div class="ebox-lbl">Total ativos</div></div>
