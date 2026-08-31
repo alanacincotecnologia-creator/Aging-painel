@@ -150,6 +150,7 @@ tr:hover td{background:var(--bg)}
 
     <div class="sec-hdr"><h2>Projetos com Escopo Limitado</h2><div class="divider"></div></div>
     <div class="esc-sum" id="esc-sum-plano"></div>
+    <div id="lim-conc-lista" style="display:none"></div>
     <div class="charts-2">
       <div class="chart-card">
         <div class="chart-title">Previsão de Conclusão por Mês</div>
@@ -404,7 +405,45 @@ function renderPlano(D){
     <div class="ebox"><div class="ebox-val c-grn">${limF1ok.length}</div><div class="ebox-lbl">Fase 1 entregue</div></div>
     <div class="ebox"><div class="ebox-val c-yel">${limF1pend.length}</div><div class="ebox-lbl">Fase 1 pendente</div></div>
     <div class="ebox"><div class="ebox-val c-blue">${mediaF1}d</div><div class="ebox-lbl">Média entrega F1</div></div>
-    <div class="ebox"><div class="ebox-val c-blue">${mediaF2}d</div><div class="ebox-lbl">Média entrega F2</div></div>`;
+    <div class="ebox"><div class="ebox-val c-blue">${mediaF2}d</div><div class="ebox-lbl">Média entrega F2</div></div>
+    <div class="ebox" style="cursor:pointer;border:1px solid var(--purple);background:#F5F3FF" onclick="toggleLimConc()">
+      <div class="ebox-val c-pur">${limF2ok.length}</div>
+      <div class="ebox-lbl">Concluídos ▾</div>
+    </div>`;
+
+  // Lista accordion de projetos Limitado concluídos
+  const limConcEl = document.getElementById("lim-conc-lista");
+  if(limConcEl){
+    const limConcSort = limF2ok.sort((a,b)=>(b.aging||0)-(a.aging||0));
+    limConcEl.innerHTML = `
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--border);cursor:pointer" onclick="toggleLimConc()">
+          <span style="font-size:13px;font-weight:600;color:var(--txt)">Projetos Escopo Limitado — Concluídos (${limConcSort.length})</span>
+          <span style="font-size:11px;color:var(--txt2)">✕ Fechar</span>
+        </div>
+        <table>
+          <thead><tr>
+            <th style="width:4%">#</th>
+            <th style="width:32%">Projeto</th>
+            <th style="width:14%">Gerente</th>
+            <th style="width:15%">Encerramento</th>
+            <th style="width:12%">Dias onboarding</th>
+            <th style="width:12%">Dias F1</th>
+          </tr></thead>
+          <tbody>${limConcSort.map((p,i)=>{
+            const diasCor=(p.aging||0)>=200?"var(--danger)":(p.aging||0)>=100?"var(--warning)":"var(--success)";
+            return`<tr>
+              <td style="color:#94A3B8;font-size:11px">${i+1}</td>
+              <td style="font-weight:600;color:var(--accent)">${p.nome}</td>
+              <td>${p.gerente}</td>
+              <td>${p.entregaF2?new Date(p.entregaF2).toLocaleDateString("pt-BR"):"—"}</td>
+              <td style="font-weight:700;color:${diasCor};text-align:center">${p.aging||"—"}d</td>
+              <td style="text-align:center">${p.diasF1||"—"}</td>
+            </tr>`;
+          }).join("")}</tbody>
+        </table>
+      </div>`;
+  }
 
   // Gráfico previsão limitados
   const mesesLim=["Ago/2026","Set/2026","Out/2026","Nov/2026","Dez/2026"];
@@ -517,6 +556,13 @@ function toggleKpiLista(id){
   document.querySelectorAll(".kpi-lista").forEach(function(l){
     if(l.id!==id) l.style.display="none";
   });
+  el.style.display=el.style.display==="none"?"block":"none";
+  if(el.style.display==="block") el.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function toggleLimConc(){
+  const el=document.getElementById("lim-conc-lista");
+  if(!el)return;
   el.style.display=el.style.display==="none"?"block":"none";
   if(el.style.display==="block") el.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
