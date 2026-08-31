@@ -295,7 +295,8 @@ function renderPlano(D){
   const pausados=D.filter(p=>p.status==="Pausado");
   const cancels=D.filter(p=>p.status==="Solic. Cancelamento");
   const kickoffs=D.filter(p=>p.status==="Kick-off");
-  const emRisco=D.filter(p=>["Em andamento","Pausado","Solic. Cancelamento"].includes(p.status)&&isRisco(p.risco));
+  const alinhamentos=D.filter(p=>p.status==="Alinhamento");
+  const emRisco=D.filter(p=>["Em andamento","Pausado","Solic. Cancelamento","Alinhamento"].includes(p.status)&&isRisco(p.risco));
   const limitados=D.filter(p=>p.escopo==="Limitado"&&ST_AT.includes(p.status));
   const concluidos=D.filter(p=>p.status==="Concluído");
   const churns=D.filter(p=>p.status==="Churn");
@@ -310,6 +311,9 @@ function renderPlano(D){
     </div>
     <div class="kpi kpi-click" onclick="toggleKpiLista('kpi-lista-andamento')">
       <div class="kpi-lbl">Em andamento ▾</div><div class="kpi-val c-blue">${emAndamento.length}</div>
+    </div>
+    <div class="kpi kpi-click" onclick="toggleKpiLista('kpi-lista-alinhamento')">
+      <div class="kpi-lbl">Alinhamento ▾</div><div class="kpi-val c-teal">${alinhamentos.length}</div>
     </div>
     <div class="kpi kpi-click" onclick="toggleKpiLista('kpi-lista-pausado')">
       <div class="kpi-lbl">Pausados ▾</div><div class="kpi-val c-yel">${pausados.length}</div>
@@ -350,7 +354,7 @@ function renderPlano(D){
           </tr></thead>
           <tbody>${lista.sort((a,b)=>(b.aging||0)-(a.aging||0)).map(p=>`<tr>
             <td title="${p.nome}" style="font-weight:500">${p.nome}</td>
-            <td><span class="badge ${p.status==="Em andamento"?"b-blue":p.status==="Pausado"?"b-yel":p.status==="Concluído"?"b-grn":p.status==="Churn"?"b-red":"b-gray"}">${p.status}</span></td>
+            <td><span class="badge ${p.status==="Em andamento"?"b-blue":p.status==="Alinhamento"?"b-teal":p.status==="Pausado"?"b-yel":p.status==="Concluído"?"b-grn":p.status==="Churn"?"b-red":"b-gray"}">${p.status}</span></td>
             <td><span class="badge ${p.escopo==="Limitado"?"b-pur":"b-gray"}">${p.escopo||"—"}</span></td>
             <td>${p.prevFmt||"—"}</td>
             <td>${p.gerente}</td>
@@ -361,6 +365,7 @@ function renderPlano(D){
     kpiListasEl.innerHTML =
       mkLista("kpi-lista-total", ativos, "Todos os ativos") +
       mkLista("kpi-lista-andamento", emAndamento, "Em andamento") +
+      mkLista("kpi-lista-alinhamento", alinhamentos, "Alinhamento") +
       mkLista("kpi-lista-pausado", pausados, "Pausados") +
       mkLista("kpi-lista-kickoff", kickoffs, "Kick-off") +
       mkLista("kpi-lista-cancel", cancels, "Solic. Cancelamento") +
