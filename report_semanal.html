@@ -223,7 +223,7 @@ tr:hover td{background:var(--bg)}
 const API_URL="https://script.google.com/macros/s/AKfycbwvaB6ixhU9b71Mul58TWyvVVg_M2u-pRvxZkiOUZTWaguKAhS_mZWLxb3bWLydUmWV/exec";
 const MESES=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
 const MESES_CURTOS=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
-const CORES_STATUS={"Em andamento":"#2563EB","Pausado":"#D97706","Solic. Cancelamento":"#DC2626","Kick-off":"#16A34A","Alinhamento":"#0D9488","Relacionamento":"#7C3AED","Churn":"#991B1B"};
+const CORES_STATUS={"Em andamento":"#2563EB","Pausado":"#D97706","Solic. Cancelamento":"#DC2626","Kick-off":"#16A34A","Kick-Off":"#16A34A","Alinhamento":"#0D9488","Relacionamento":"#7C3AED","Churn":"#991B1B"};
 const ST_AT=["Em andamento","Alinhamento","Pausado","Solic. Cancelamento","Kick-off","Relacionamento"];
 const charts={};
 
@@ -519,15 +519,15 @@ function renderFPA(D){
 
 // ── FLUXO ────────────────────────────────────────────────────
 function renderFluxo(D){
-  const ativos    = D.filter(p=>ST_AT.includes(p.status));
+  const ativos    = D.filter(p=>ST_AT.includes(p.status)||p.status==="Kick-Off");
   const emAnd     = D.filter(p=>p.status==="Em andamento");
-  const kickoffs  = D.filter(p=>p.status==="Kick-off");
+  const kickoffs  = D.filter(p=>p.status==="Kick-off"||p.status==="Kick-Off");
   const alinhamentos = D.filter(p=>p.status==="Alinhamento");
   const pausados  = D.filter(p=>p.status==="Pausado");
   const cancels   = D.filter(p=>p.status==="Solic. Cancelamento");
   const concluidos= D.filter(p=>p.status==="Concluído");
   const churns    = D.filter(p=>p.status==="Churn");
-  const emRisco   = D.filter(p=>ST_AT.includes(p.status)&&isRisco(p.risco));
+  const emRisco   = D.filter(p=>(ST_AT.includes(p.status)||p.status==="Kick-Off")&&isRisco(p.risco));
   const statusCounts={};
   ativos.forEach(p=>{statusCounts[p.status]=(statusCounts[p.status]||0)+1});
 
