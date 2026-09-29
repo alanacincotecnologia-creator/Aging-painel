@@ -403,7 +403,7 @@ function renderPlano(D){
     const d1=new Date(p.kickoff),d2=new Date(p.entregaF1);
     return s+(isNaN(d1)||isNaN(d2)?0:Math.round((d2-d1)/86400000));
   },0)/limF1ok.length):0;
-  const limF2ok=D.filter(p=>p.escopo==="Limitado"&&p.status==="Concluído"&&p.aging);
+  const limF2ok=D.filter(p=>p.escopo==="Limitado"&&p.status==="Concluído");
   const mediaF2=limF2ok.length?Math.round(limF2ok.reduce((s,p)=>s+(p.aging||0),0)/limF2ok.length):0;
 
   document.getElementById("esc-sum-plano").innerHTML=`
