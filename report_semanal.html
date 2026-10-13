@@ -397,8 +397,8 @@ function renderPlano(D){
   ],{legend:true,extra:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
 
   // Escopo Limitado — sumário
-  const limF1ok=limitados.filter(p=>p.entregaF1);
-  const limF1pend=limitados.filter(p=>!p.entregaF1);
+  const limF1ok=limitados.filter(p=>p.diasF1>0);
+  const limF1pend=limitados.filter(p=>!p.diasF1||p.diasF1===0);
   const mediaF1=limF1ok.length?Math.round(limF1ok.reduce((s,p)=>s+(p.diasF1||0),0)/limF1ok.length):0;
   const limF2ok=D.filter(p=>p.escopo==="Limitado"&&p.status==="Concluído");
   const mediaF2=limF2ok.length?Math.round(limF2ok.reduce((s,p)=>s+(p.aging||0),0)/limF2ok.length):0;
